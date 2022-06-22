@@ -51,10 +51,12 @@ section .data
 section .text
     
 %macro strcmp 2
+    push rdi
     mov edi, %1
     getStringLength edi
     mov esi, %2
     repe cmpsb
+    pop rdi
 %endmacro
 
     ; OPCODE FOR COMP
@@ -253,7 +255,7 @@ section .text
         mov rdx, "010101"
         mov [op], rdx
         mov byte [opcode + 3], "1"
-        
+
         
 
         
@@ -265,6 +267,7 @@ section .text
 
     ; OPCODE FOR DESTINATION
     destop:
+      
         strcmp dest, null
         jnz n1
         mov dword [op], "000"
@@ -305,42 +308,50 @@ section .text
         mov dword [op], "111"
 
         finish:
+     
         ret
 
 
     ; OPCODE FOR JUMP FIELD
     jumpop:
-        push rdi
         mov byte [jump + 3], 0
+
         strcmp jump, jJGE
         jnz .n1
         mov dword [op], "011"
+        jmp endjump
         .n1:
         strcmp jump, null
         jnz .n2
         mov dword [op], "000"
+        jmp endjump
         .n2:
         strcmp jump, jJGT
         jnz .n3
         mov dword [op], "001"
+        jmp endjump
         .n3:
         strcmp jump, jJLT
         jnz .n4
         mov dword [op], "100"
+        jmp endjump
         .n4:
         strcmp jump, jJNE
         jnz .n5
         mov dword [op], "101"
+        jmp endjump
         .n5:
         strcmp jump, jJLE
         jnz .n6
         mov dword [op], "110"
+        jmp endjump
         .n6:
         strcmp jump, jJMP
-        jnz .n7
+        jnz endjump
         mov dword [op], "111"
-        .n7:
-        pop rdi
+
+        endjump:
+       
         ret
 
 

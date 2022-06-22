@@ -37,63 +37,53 @@ section .text
         xor ecx, ecx
         .loop:
             inc ecx
-            
-            
-            
-            
-            
-            
-            
+
             call getline
             call getline
-            call getline
-            call getline
-
-            push line
-            call getDetails
-            call compop
-            lea edi, [opcode + 4]
-            mov esi, op
-            mov ecx, 6
-            repe movsb
-            print opcode, 16
-            
-            
-          
-            
-            
-
-            exit
-            
-
-
-            
-            
             push line
             call instructionType
             cmp byte [instructionT], C_INSTRUCTION
             jne skip
+
             call getDetails
-            print dest, 6
-            print newline, 1
-            print comp, 6
-            
+            mov edi, opcode
+            mov al, "1"
+            mov ecx, 3
+            repe stosb
+            inc edi
+            call compop
+            mov esi, op
+            mov ecx, 6
+            repe movsb
+            cmp byte [dest], 0
+            jz nodest
+            call destop
+            mov esi, op
+            mov ecx, 3
+            repe movsb
+            nodest:
+            cmp byte [jump], 0
+            jz skip
+            call jumpop
+            mov esi, op
+            mov ecx, 3
+            repe movsb      
             skip:
+            print opcode, 16
+            
 
             
             
             
             
-            
+  
 
             
             endloop:
 
             
             
-            
 
-            cmp byte [esi], 0
             
             
 
