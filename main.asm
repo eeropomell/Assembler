@@ -45,8 +45,12 @@ section .text
         call readfile
         call numlines
         
+        
+        
 
         main:
+
+
                   
             call getline
             
@@ -54,7 +58,7 @@ section .text
             call instructionType
 
             cmp byte [instructionT], C_INSTRUCTION
-            jne skip
+            jne a_instruction
 
             call getDetails
             mov edi, opcode
@@ -79,14 +83,34 @@ section .text
             mov esi, op
             mov ecx, 3
             repe movsb   
-
+       
             pr:
             print opcode, 16
             print newline, 1
 
-            skip:
+            mov edi, jump 
+            mov al, 0
+            mov ecx, 3
+            repe stosb
+            jmp iteration
+            a_instruction:
+
+            call getSymbol
+            stringToNumber symbol
+            printNumber rdi
+
+            
 
             iteration:
+
+                mov edi, opcode
+                mov al, "0"
+                mov ecx, 16
+                repe stosb
+               
+                
+                
+
                 jmp main
                 
  
@@ -99,9 +123,14 @@ section .text
         exit
 
         instructionType:
-            mov edi, [rsp + 8]
-            inc edi
-            
+            mov edi, line
+            .whitespace:
+                cmp byte [edi], 0
+                jnz .out
+                inc edi
+                jmp .whitespace
+            .out:
+    
             cmp byte [edi], "@"                             ; @xxx = A_INSTRUCTION
             jne .around1
             mov byte [instructionT], A_INSTRUCTION
@@ -118,7 +147,7 @@ section .text
             ret 
           
         getDetails:
-            mov edi, [rsp + 8]
+            mov edi, line
             inc edi                ; get first byte
             mov esi, edi
             
@@ -159,7 +188,7 @@ section .text
 
         getSymbol: 
             
-            mov esi, [rsp + 8]                  ; line
+            mov esi, line                 ; line
             add esi, 2                          ; skip @ or (
             mov edi, symbol
             
@@ -180,18 +209,28 @@ section .text
             inc byte [linenum]
             mov ebx, [totalLines]
             cmp byte [linenum], bl
-            je theEnd
+            jg theEnd
             
             mov esi, [fileptr]
             call clear              ; clears the previous line
 
+            whitespace:
+            cmp byte [esi], 10
+            je remove
+            cmp byte [esi], 0
+            je remove
+            jmp byteb
+            remove:
+            inc esi
+            jmp whitespace
 
-            .loop:
+
+            byteb:
                 mov al, [esi]
                 movsb 
                 mov al, [esi]
                 cmp byte [esi], 10
-                jne .loop
+                jne byteb
             .out:
             mov [fileptr], esi
             ret 
@@ -207,17 +246,24 @@ section .text
         
         numlines:
             xor ebx, ebx
-            mov edi, esi
-            .line:  
+            mov edi, [fileptr]
+            mov al, 10
+            looper:
                 inc ebx
-                .loop:
+                .line:
                     inc edi
                     cmp byte [edi], 10
-                    je .line
+                    jne around
+                    cmp byte [edi + 1], 10          ; detect white space
+                    jne looper
+                    around:
                     cmp byte [edi], 0
                     jz .out
-                    jmp .loop
+                    
+                    jmp looper.line
+                    
             .out:
+            dec rbx
             mov [totalLines], ebx
             ret
 
