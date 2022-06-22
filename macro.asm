@@ -33,15 +33,7 @@ section .data
     space db 32
     minus db false
     point db false
-    two dd 2.0
-    ten dd 10.0
-    round dd 0.000005
-    one dd 1.0
-    root dd 1.0
-    three dd 3.0
-    zero dd 0.0
-    smallvalue dd 0.001
-    testvalue dw 0
+
 
     sign db 0
     exponent dw 0

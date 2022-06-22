@@ -1,6 +1,6 @@
 @2
 M=1
 @3
-AD=D+A;JGT
+AD=D+1;JGT
 @0
-M=-1
+M=D+A

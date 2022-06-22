@@ -11,7 +11,7 @@ section .bss
     comp resb 6
     jump resb 6
 
-    op resb 6
+    op resb 64
 
 A_INSTRUCTION equ 0
 C_INSTRUCTION equ 1
@@ -22,6 +22,7 @@ section .data
     filename db "file.asm", 0
     opfile db "opcode.txt", 0
     reset times 10 db 0
+    opcode db "0000000000000000"
 
 
 section .text
@@ -47,10 +48,19 @@ section .text
             call getline
             call getline
             call getline
+
             push line
             call getDetails
-            call destop
-            print op, 4
+            call compop
+            lea edi, [opcode + 4]
+            mov esi, op
+            mov ecx, 6
+            repe movsb
+            print opcode, 16
+            
+            
+          
+            
             
 
             exit
