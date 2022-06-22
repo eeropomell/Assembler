@@ -7,9 +7,9 @@ section .bss
     notfound resb 1
     symbol resb 10
 
-    dest resb 6
     comp resb 6
     jump resb 6
+    dest resb 6
 
     op resb 64
 
@@ -45,13 +45,8 @@ section .text
         call readfile
         call numlines
         
-        
-        
 
-        main:
-
-
-                  
+        main: 
             call getline
             
             push line
@@ -70,26 +65,38 @@ section .text
             mov esi, op
             mov ecx, 6
             repe movsb
+            
             cmp byte [dest], 0
             jz nodest
             call destop
             mov esi, op
             mov ecx, 3
-            repe movsb
+            repe movsb        
+
             nodest:
+            add edi, 3
             cmp byte [jump], 0
-            jz pr
+            jz cleanup
             call jumpop
             mov esi, op
             mov ecx, 3
-            repe movsb   
-       
-            pr:
-        
-            mov edi, jump 
+            repe movsb  
+            
+            cleanup:
+            
+            
+
+            mov edi, comp
             mov al, 0
-            mov ecx, 3
+            mov ecx, 18
             repe stosb
+            
+            
+
+
+    
+            
+            
             jmp iteration
 
             a_instruction:
@@ -98,19 +105,32 @@ section .text
             stringToNumber symbol
             call binaryString
 
+            mov edi, symbol
+            mov al, 0
+            mov ecx, 10
+            repe stosb
+
 
 
             
 
             iteration:
 
+                
                 print opcode, 16
                 print newline, 1
+
+                
+                
+
 
                 mov edi, opcode
                 mov al, "0"
                 mov ecx, 16
                 repe stosb
+
+                
+            
                
                 
                 
@@ -175,6 +195,7 @@ section .text
                 repne scasb
                 cmp byte [edi], 0
                 jz getComp
+                
                               
                 mov edi, dest
                 getDest:

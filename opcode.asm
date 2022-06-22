@@ -11,6 +11,7 @@ section .data
     AM DB "AM", 0
     AD db "AD", 0
     ADM db "ADM", 0
+    MD db "MD", 0
 
 
     jJGT db "JGT", 0
@@ -304,8 +305,12 @@ section .text
         jmp finish
         n7:
         strcmp dest, ADM
-        jnz finish
+        jnz n8
         mov dword [op], "111"
+        n8:
+        strcmp dest, MD
+        jnz finish
+        mov dword [op], "011"
 
         finish:
      
