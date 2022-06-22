@@ -1,14 +1,17 @@
 %include "macro.asm"
+%include "opcode.asm"
 
 section .bss 
     line resb 10
     instructionT resb 1
-
+    notfound resb 1
     symbol resb 10
 
-    dest resb 4
-    comp resb 4
-    jump resb 4
+    dest resb 6
+    comp resb 6
+    jump resb 6
+
+    op resb 6
 
 A_INSTRUCTION equ 0
 C_INSTRUCTION equ 1
@@ -17,8 +20,8 @@ L_INSTRUCTION equ 2
 
 section .data
     filename db "file.asm", 0
+    opfile db "opcode.txt", 0
     reset times 10 db 0
-
 
 
 section .text
@@ -28,25 +31,51 @@ section .text
     _start:
         openfile filename
         push rax
-        xor ecx, ecx
 
         call readfile
         xor ecx, ecx
         .loop:
             inc ecx
             
+            
+            
+            
+            
+            
+            
             call getline
             call getline
+            call getline
+            call getline
+            push line
+            call getDetails
+            call destop
+            print op, 4
+            
 
-            print line, 10
+            exit
+            
+
+
+            
+            
+            push line
+            call instructionType
+            cmp byte [instructionT], C_INSTRUCTION
+            jne skip
+            call getDetails
+            print dest, 6
+            print newline, 1
+            print comp, 6
+            
+            skip:
+
             
             
             
             
             
-            
-            
-    
+
             
             endloop:
 
@@ -67,6 +96,8 @@ section .text
 
         instructionType:
             mov edi, [rsp + 8]
+            inc edi
+            
             cmp byte [edi], "@"                             ; @xxx = A_INSTRUCTION
             jne .around1
             mov byte [instructionT], A_INSTRUCTION
@@ -81,85 +112,75 @@ section .text
             .end:
             
             ret 
-
-    
-        getCharacter:
-            mov esi, [rsp + 24]
-            mov al, [rsp + 16]
-            
-            cmp byte [rsp + 16], "D"            ; skip first loop, if getting dest
-            je string
-
-            .loop:
-                cmp byte [esi], 0
-                jz .out
-                inc esi
-                cmp byte [esi], al
-                jne .loop
-            .out:
-            inc esi
-            string:
+          
+        getDetails:
             mov edi, [rsp + 8]
-            mov al, [esi]
-            .loop:
-                cmp byte [esi], 0
-                jz .end
-                cmp byte [esi], ";"
-                je .end
-                cmp byte [esi], "="
-                je .end
-                movsb  
-                jmp .loop
+            inc edi                ; get first byte
+            mov esi, edi
             
-            .end:   
+            xor eax, eax
+            hasDest:
+                mov ecx, 10
+                mov al, "="
+                repne scasb
+                cmp byte [edi], 0
+                jz getComp
+                              
+                mov edi, dest
+                getDest:
+                    movsb
+                    cmp byte [esi], "="
+                    jne getDest
+                    inc esi
+        
+            getComp:
+                mov edi, comp
+                .loop:
+                    movsb
+                    cmp byte [esi], ";"
+                    je getJump
+                    cmp byte [esi], 0
+                    jnz .loop
+                    jmp out
+            getJump:
+            inc esi
+            mov edi, jump
+                .loop:
+                    movsb
+                    cmp byte [esi], 0
+                    jnz .loop  
+            out:
             ret
-
 
 
         getSymbol: 
             
-            mov edi, [rsp + 8]                  ; line
-            inc edi                             ; skip @ or (
-            mov esi, symbol
+            mov esi, [rsp + 8]                  ; line
+            add esi, 2                          ; skip @ or (
+            mov edi, symbol
             
             .loop:
-                cmp byte [edi], ")"
+                cmp byte [esi], ")"
                 je .end
-                cmp byte [edi], 0
+                cmp byte [esi], 0
                 je .end
-                cmp byte [edi], 10
+                cmp byte [esi], 10
                 je .end
-                mov al, [edi]
-                mov [esi], al
-                inc esi
-                inc edi
+                movsb
                 jmp .loop 
             .end:
 
             ret
             
-
-            
-
         getline:
-           
-            mov edi, line
+            call clear              ; clears the previous line
 
-            
-            push line
-            call clearname
-            
-
-
-
-
-            whitespace:
+            whitespace:             ; remove whitespace from file
             cmp byte [esi], 10
             jne .loop
             inc esi
             jmp whitespace
             
-
             .loop:
                 movsb
                 cmp byte [esi], 10
@@ -172,24 +193,15 @@ section .text
             mov esi, buffer
             mov edx, 320
             syscall
-            ret
-       
+            ret  
 
-        clearname:
-            mov rbp, rsp
-            push rdi
-            push rsi
-            mov edi, reset
-            mov esi, [rsp + 8]
-
-            .loop:
-                movsb
-                cmp byte [esi], 0
-                jnz .loop
-            pop rsi
-            pop rdi
-          
-            ret 8
+        clear:
+            mov edi, line
+            mov al, 0
+            mov ecx, 10
+            repe stosb
+            sub edi, 9                     ; index back to first byte of line
+            ret 
 
 
 
