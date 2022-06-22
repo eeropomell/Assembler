@@ -318,3 +318,4 @@ section .text
 ; nasm -gdwarf -f elf64 main.asm
 ; ld -g -o main main.o -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc -m elf_x86_64
 ; ld -m elf_x86_64 -g -o main main.o
+; top gun
