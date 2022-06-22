@@ -30,7 +30,6 @@ section .bss
 section .data
     newline db 10
     carriage db 13
-    null db 0
     space db 32
     minus db false
     point db false
