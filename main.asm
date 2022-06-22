@@ -13,6 +13,8 @@ section .bss
 
     op resb 64
 
+    fileptr resb 64
+
 A_INSTRUCTION equ 0
 C_INSTRUCTION equ 1
 L_INSTRUCTION equ 2
@@ -24,24 +26,33 @@ section .data
     reset times 10 db 0
     opcode db "0000000000000000"
 
+    linenum db 0
+    totalLines db 0
+
+
+
+
 
 section .text
     global _start 
         
 
     _start:
+        
         openfile filename
         push rax
 
         call readfile
-        xor ecx, ecx
-        .loop:
-            inc ecx
+        call numlines
+        
 
+        main:
+                  
             call getline
-            call getline
+            
             push line
             call instructionType
+
             cmp byte [instructionT], C_INSTRUCTION
             jne skip
 
@@ -63,35 +74,28 @@ section .text
             repe movsb
             nodest:
             cmp byte [jump], 0
-            jz skip
+            jz pr
             call jumpop
             mov esi, op
             mov ecx, 3
-            repe movsb      
-            skip:
+            repe movsb   
+
+            pr:
             print opcode, 16
-            
+            print newline, 1
 
-            
-            
-            
-            
-  
+            skip:
 
-            
-            endloop:
-
-            
-            
-
-            
-            
-
-        end:
+            iteration:
+                jmp main
+                
+ 
+        theEnd:
         
         
-                   
-
+        
+        
+          
         exit
 
         instructionType:
@@ -173,19 +177,24 @@ section .text
             ret
             
         getline:
+            inc byte [linenum]
+            mov ebx, [totalLines]
+            cmp byte [linenum], bl
+            je theEnd
+            
+            mov esi, [fileptr]
             call clear              ; clears the previous line
 
-            whitespace:             ; remove whitespace from file
-            cmp byte [esi], 10
-            jne .loop
-            inc esi
-            jmp whitespace
-            
+
             .loop:
-                movsb
+                mov al, [esi]
+                movsb 
+                mov al, [esi]
                 cmp byte [esi], 10
                 jne .loop
-        ret
+            .out:
+            mov [fileptr], esi
+            ret 
 
         readfile:
             mov eax, SYSREAD
@@ -193,7 +202,24 @@ section .text
             mov esi, buffer
             mov edx, 320
             syscall
+            mov qword [fileptr], buffer
             ret  
+        
+        numlines:
+            xor ebx, ebx
+            mov edi, esi
+            .line:  
+                inc ebx
+                .loop:
+                    inc edi
+                    cmp byte [edi], 10
+                    je .line
+                    cmp byte [edi], 0
+                    jz .out
+                    jmp .loop
+            .out:
+            mov [totalLines], ebx
+            ret
 
         clear:
             mov edi, line
