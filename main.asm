@@ -85,23 +85,27 @@ section .text
             repe movsb   
        
             pr:
-            print opcode, 16
-            print newline, 1
-
+        
             mov edi, jump 
             mov al, 0
             mov ecx, 3
             repe stosb
             jmp iteration
+
             a_instruction:
 
             call getSymbol
             stringToNumber symbol
-            printNumber rdi
+            call binaryString
+
+
 
             
 
             iteration:
+
+                print opcode, 16
+                print newline, 1
 
                 mov edi, opcode
                 mov al, "0"
@@ -115,12 +119,25 @@ section .text
                 
  
         theEnd:
-        
-        
-        
-        
-          
+
         exit
+
+
+        binaryString:
+            mov eax, edi
+            mov ebx, 2
+            mov ecx, 15
+            mov edi, opcode + 15
+            binary:
+                cdq
+                div ebx
+                add dl, 48
+                mov byte [edi], dl
+                dec edi
+                loop binary
+            ret
+        
+
 
         instructionType:
             mov edi, line
