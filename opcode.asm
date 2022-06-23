@@ -75,10 +75,14 @@ section .text
         push symbol
         push predefined
         call strcmpArr
-        cmp ecx, 24
+        cmp esi, arrayEnd 
         je skip2
-        printNumber 2
 
+        mov esi, symbol + 1
+        mov edi, symbol
+        mov ecx, 6
+        repe movsb
+        
         skip:
         cmp byte [symbol], "R"
         je skip2
@@ -86,6 +90,9 @@ section .text
         push symbol
         push rdi
         call strcmpArr
+        cmp esi, arrayEnd
+        je skip2 
+        printNumber 3
         skip2:
 
      
