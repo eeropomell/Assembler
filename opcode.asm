@@ -1,8 +1,6 @@
 
 
 section .data
-
-
     null db "null", 0
     M db "M", 0
     D db "D", 0
@@ -257,14 +255,8 @@ section .text
         mov [op], rdx
         mov byte [opcode + 3], "1"
 
-        
-
-        
-
-
         finishcomp:
         ret
-
 
     ; OPCODE FOR DESTINATION
     destop:
@@ -357,30 +349,5 @@ section .text
 
         endjump:
        
-        ret
-
-
-        
-
-
-
-        
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
-
-        
-        
-  
-        
-
         ret
 

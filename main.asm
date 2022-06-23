@@ -27,15 +27,8 @@ section .data
     reset times 10 db 0
     opcode db "0000000000000000"
     
-
-    linenum db 0
-    totalLines db 0
     lastround db false
-
-
-
-
-
+    
 section .text
     global _start 
         
@@ -45,13 +38,13 @@ section .text
         openfile filename
         push rax            ; file descriptor
 
-        call readfile  
-               
+        call readfile       
+
         main: 
             call getline
             
             push line
-            call instructionType
+            call instructionType        
 
             cmp byte [instructionT], C_INSTRUCTION          
             jne a_instruction
@@ -69,7 +62,7 @@ section .text
             
             cmp byte [dest], 0      ; destination field is optional
             jz nodest
-            call destop
+            call destop         
             push op
             push 3
             call fill   
@@ -81,13 +74,12 @@ section .text
             jumpfield:
             cmp byte [jump], 0      ; jump field is optional
             jz cleanup
-            call jumpop
+            call jumpop             
             push op
             push 3
             call fill
             
-            cleanup:
-            
+            cleanup:    
             push comp           ; clears comp, dest and jump field
             push 0
             push 18             ; clear 18 bytes which is comp, dest and jump
@@ -96,16 +88,14 @@ section .text
             jmp iteration
 
             a_instruction:
-
-            call getSymbol
+            call getSymbol          ; for example @150 symbol = "150"
             stringToNumber symbol
             call binaryString
 
-            push symbol             ; clear symbol
+            push symbol             ; clear symbol for next iteration
             push 0
             push 10
             call clear
-
 
             iteration:   
                 print opcode, 16
@@ -124,7 +114,6 @@ section .text
         exit
 
 
-
         binaryString:                   ; convert A instruction to binary version
             mov eax, edi
             mov ebx, 2
@@ -139,7 +128,6 @@ section .text
                 loop binary
             ret
         
-
 
         instructionType:
             mov edi, line
@@ -171,14 +159,14 @@ section .text
             mov esi, edi
             
             xor eax, eax
-            hasDest:
+            hasDest:                            ; if strings contains "=" it has the destination field
+                ;                               ; example: A=M+1, destination = A
                 mov ecx, 10
                 mov al, "="
                 repne scasb
-                cmp byte [edi], 0               ; if no destination skip next loop
+                cmp byte [edi], 0               ; if no destination skip to the next loop
                 jz getComp
-                
-                              
+                          
                 mov edi, dest
                 getDest:
                     movsb
@@ -205,8 +193,7 @@ section .text
             out:
             ret
 
-
-        getSymbol: 
+        getSymbol:             
             
             mov esi, line
             add esi, 2                          ; skip @ or (
@@ -250,7 +237,7 @@ section .text
                 inc byte [bytenum]
                 movsb 
 
-                cmp [bytenum], ebx
+                cmp [bytenum], ebx              ; if (current byte == totalbytes) set lastround to true
                 jnge .around
                 mov byte [lastround], true
                 jmp .out
@@ -279,7 +266,7 @@ section .text
                 add [totalBytes], eax
                 mov eax, SYSREAD
                 mov edi, [rsp + 8]
-                mov esi, ebx                    ; buffer address
+                mov esi, ebx                    
                 mov edx, 30
                 syscall
                 
