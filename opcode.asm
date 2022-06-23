@@ -45,6 +45,25 @@ section .data
     dora db "D|A", 0
     dorm db "D|M", 0
 
+    
+    destM db "M", "MD", 0
+    destD db "D", "DM", 0
+    destA db "A", "AD", "AM", "ADM", 0
+    destTable:
+        dq destM
+        dq destD
+        dq destA
+
+    destMcode db "001", "011", 0
+    destDcode db "010", "011", 0
+    destAcode db "100", "101", "110", "111", 0
+    destCodeTable:
+        dq destMcode
+        dq destDcode
+        dq destAcode
+
+
+
     registers dq "R0", "R1", "R2"
     dq "R3", "R4", "R5"
     dq "R6", "R7", "R8" 
@@ -73,7 +92,11 @@ section .text
 
 
         cmp byte [symbol], "R"
-        jne skip    
+        jne skip 
+        cmp byte [symbol + 1], "0"
+        jl skip 
+        cmp byte [symbol + 1], "9"
+        jg skip
 
         push registersEnd
         push symbol
@@ -110,6 +133,13 @@ section .text
             jne .move
         
         skip2:
+        ret
+
+            ; OPCODE FOR DESTINATION
+    destop:
+      
+        print dest, 3
+     
         ret
 
     ; OPCODE FOR COMP
@@ -310,56 +340,6 @@ section .text
         mov byte [opcode + 3], "1"
 
         finishcomp:
-        ret
-
-    ; OPCODE FOR DESTINATION
-    destop:
-      
-        strcmp dest, null
-        jnz n1
-        mov dword [op], "000"
-        jmp finish
-        n1:
-        strcmp dest, D
-        jnz n2
-        mov dword [op], "010"
-        jmp finish
-        n2:
-        strcmp dest, M
-        jnz n3
-        mov dword [op], "001"
-        jmp finish
-        n3:
-        strcmp dest, A 
-        jnz n4
-        mov dword [op], "100"
-        jmp finish
-        n4:
-        strcmp dest, DM
-        jnz n5
-        mov dword [op], "011"
-        jmp finish
-        n5:
-        strcmp dest, AM
-        jnz n6
-        mov dword [op], "101"
-        jmp finish
-        n6:
-        strcmp dest, AD
-        jnz n7
-        mov dword [op], "110"
-        jmp finish
-        n7:
-        strcmp dest, ADM
-        jnz n8
-        mov dword [op], "111"
-        n8:
-        strcmp dest, MD
-        jnz finish
-        mov dword [op], "011"
-
-        finish:
-     
         ret
 
 
