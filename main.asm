@@ -298,13 +298,16 @@ section .text
 
 
         clear:
+            
             mov rbp, rsp
+            push rsi
             push rcx
             mov edi, [rbp + 24]         ; address to be cleared
             mov al, [rbp + 16]          
             mov ecx, [rbp + 8]
             repe stosb
             pop rcx
+            pop rsi
             ret 24
 
 

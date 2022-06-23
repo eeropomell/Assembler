@@ -45,45 +45,50 @@ section .data
     dora db "D|A", 0
     dorm db "D|M", 0
 
-    predefined dd "R0", "R1", "R2", 
-    dd "R3", "R4", "R5", 
-    dd "R6", "R7", "R8", 
-    dd "R9", "R10", "R11", 
-    dd "R12", "R13", "R14", "R15"
-    dd "SCREEN", "KBD", "SP"
-    dd "LCL", "ARG", "THIS", "THAT"
+    predefined dq "R0", "R1", "R2"
+    dq "R3", "R4", "R5"
+    dq "R6", "R7", "R8" 
+    dq "R9", "R10", "R11"
+    dq "R12", "R13", "R14", "R15"
+    dq "SCREEN", "KBD", "SP"
+    dq "LCL", "ARG", "THIS", "THAT"
     arrayEnd db 0
 
+    t_predefined db "1"
+
 section .bss 
-    tempString resb 4
+    tempString resb 6
 
 section .text
+    
+
 
     handlePredefined:
         xor eax, eax
+        mov esi, predefined
+        mov ecx, 0   
+
+
+        cmp byte [symbol], "R"
+        jne skip    
 
         push symbol
-        push 16
-        push predefined 
+        push predefined
         call strcmpArr
+        cmp ecx, 24
+        je skip2
+        printNumber 2
 
         skip:
+        cmp byte [symbol], "R"
+        je skip2
         lea edi, [predefined + 4 * 16]
-        
+        push symbol
+        push rdi
+        call strcmpArr
+        skip2:
 
-        
-        endOfArray:
-        
-
-        
-        
-        
-        
-
-
-        
-        
-
+     
         ret
 
     ; OPCODE FOR COMP
