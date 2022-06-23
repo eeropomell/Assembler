@@ -4,7 +4,6 @@
 section .bss 
     line resb 10
     instructionT resb 1
-    notfound resb 1
     symbol resb 10
 
     comp resb 6
@@ -14,6 +13,8 @@ section .bss
     op resb 64
 
     fileptr resb 64
+    totalBytes resb 4
+    bytenum resb 4
 
 A_INSTRUCTION equ 0
 C_INSTRUCTION equ 1
@@ -25,9 +26,11 @@ section .data
     opfile db "opcode.txt", 0
     reset times 10 db 0
     opcode db "0000000000000000"
+    
 
     linenum db 0
     totalLines db 0
+    lastround db false
 
 
 
@@ -40,63 +43,56 @@ section .text
     _start:
         
         openfile filename
-        push rax
+        push rax            ; file descriptor
 
-        call readfile
-        call numlines
-        
-
+        call readfile  
+               
         main: 
             call getline
             
             push line
             call instructionType
 
-            cmp byte [instructionT], C_INSTRUCTION
+            cmp byte [instructionT], C_INSTRUCTION          
             jne a_instruction
 
-            call getDetails
+            call getDetails                     ; get comp, dest and jump fields   
             mov edi, opcode
-            mov al, "1"
+            mov al, "1"                         ; first three bytes are 111
             mov ecx, 3
             repe stosb
-            inc edi
-            call compop
-            mov esi, op
-            mov ecx, 6
-            repe movsb
+            inc edi                      
+            call compop             ; opcode for comp field
+            push op
+            push 6
+            call fill
             
-            cmp byte [dest], 0
+            cmp byte [dest], 0      ; destination field is optional
             jz nodest
             call destop
-            mov esi, op
-            mov ecx, 3
-            repe movsb        
+            push op
+            push 3
+            call fill   
+            jmp jumpfield  
 
             nodest:
-            add edi, 3
-            cmp byte [jump], 0
+            add edi, 3              ; fill adds 3 to edi so do it here if fill isnt called
+
+            jumpfield:
+            cmp byte [jump], 0      ; jump field is optional
             jz cleanup
             call jumpop
-            mov esi, op
-            mov ecx, 3
-            repe movsb  
+            push op
+            push 3
+            call fill
             
             cleanup:
             
-            
+            push comp           ; clears comp, dest and jump field
+            push 0
+            push 18             ; clear 18 bytes which is comp, dest and jump
+            call clear
 
-            mov edi, comp
-            mov al, 0
-            mov ecx, 18
-            repe stosb
-            
-            
-
-
-    
-            
-            
             jmp iteration
 
             a_instruction:
@@ -105,45 +101,31 @@ section .text
             stringToNumber symbol
             call binaryString
 
-            mov edi, symbol
-            mov al, 0
-            mov ecx, 10
-            repe stosb
+            push symbol             ; clear symbol
+            push 0
+            push 10
+            call clear
 
 
-
-            
-
-            iteration:
-
-                
+            iteration:   
                 print opcode, 16
                 print newline, 1
 
-                
-                
+                push opcode             ; clear opcode for next iteration
+                push "0"
+                push 16
+                call clear
 
-
-                mov edi, opcode
-                mov al, "0"
-                mov ecx, 16
-                repe stosb
-
+                cmp byte [lastround], true              ; true if end of file
+                jne main
                 
-            
-               
-                
-                
-
-                jmp main
-                
- 
         theEnd:
 
         exit
 
 
-        binaryString:
+
+        binaryString:                   ; convert A instruction to binary version
             mov eax, edi
             mov ebx, 2
             mov ecx, 15
@@ -183,7 +165,7 @@ section .text
             
             ret 
           
-        getDetails:
+        getDetails:                 ; get dest, comp and jump for C instruction
             mov edi, line
             inc edi                ; get first byte
             mov esi, edi
@@ -193,7 +175,7 @@ section .text
                 mov ecx, 10
                 mov al, "="
                 repne scasb
-                cmp byte [edi], 0
+                cmp byte [edi], 0               ; if no destination skip next loop
                 jz getComp
                 
                               
@@ -226,7 +208,7 @@ section .text
 
         getSymbol: 
             
-            mov esi, line                 ; line
+            mov esi, line
             add esi, 2                          ; skip @ or (
             mov edi, symbol
             
@@ -244,74 +226,82 @@ section .text
             ret
             
         getline:
-            inc byte [linenum]
-            mov ebx, [totalLines]
-            cmp byte [linenum], bl
-            jg theEnd
-            
+            mov ebx, [totalBytes]           ; needed for checking end of file
             mov esi, [fileptr]
+            
+            push line    
+            push 0                  
+            push 10
             call clear              ; clears the previous line
+            sub edi, 9              ; get back to starting index
 
             whitespace:
             cmp byte [esi], 10
             je remove
-            cmp byte [esi], 0
-            je remove
-            jmp byteb
+
+            jmp move
             remove:
             inc esi
+            inc byte [bytenum]
             jmp whitespace
 
 
-            byteb:
-                mov al, [esi]
+            move:
+                inc byte [bytenum]
                 movsb 
-                mov al, [esi]
+
+                cmp [bytenum], ebx
+                jnge .around
+                mov byte [lastround], true
+                jmp .out
+                .around:
                 cmp byte [esi], 10
-                jne byteb
+                jne move
             .out:
             mov [fileptr], esi
             ret 
 
-        readfile:
+        readfile:                       ; reads 30 bytes at a time until end of file
+            mov byte [totalBytes], 0
+            
+            mov ebx, buffer
             mov eax, SYSREAD
-            mov edi, [rsp + 8]
-            mov esi, buffer
-            mov edx, 320
+            mov edi, [rsp + 8]              ; file descriptor
+            mov esi, ebx                    ; buffer address
+            mov edx, 30
             syscall
             mov qword [fileptr], buffer
+            cmp eax, 0
+            jz .out
+
+            .readmore:
+                add ebx, eax                    ; move buffer address the amount of bytes that were read
+                add [totalBytes], eax
+                mov eax, SYSREAD
+                mov edi, [rsp + 8]
+                mov esi, ebx                    ; buffer address
+                mov edx, 30
+                syscall
+                
+                cmp eax, 0              ; read until end of file
+                jnz  .readmore 
             ret  
-        
-        numlines:
-            xor ebx, ebx
-            mov edi, [fileptr]
-            mov al, 10
-            looper:
-                inc ebx
-                .line:
-                    inc edi
-                    cmp byte [edi], 10
-                    jne around
-                    cmp byte [edi + 1], 10          ; detect white space
-                    jne looper
-                    around:
-                    cmp byte [edi], 0
-                    jz .out
-                    
-                    jmp looper.line
-                    
-            .out:
-            dec rbx
-            mov [totalLines], ebx
-            ret
+            
+        .out:
+
+        fill:                           ; fills the opcode string (edi has the opcode address)     
+            mov esi, [rsp + 16]                
+            mov ecx, [rsp + 8]
+            repe movsb 
+            ret 16       
+
 
         clear:
-            mov edi, line
-            mov al, 0
-            mov ecx, 10
+            mov edi, [rsp + 24]         ; address to be cleared
+            mov al, [rsp + 16]          
+            mov ecx, [rsp + 8]
             repe stosb
-            sub edi, 9                     ; index back to first byte of line
-            ret 
+            ret 24
 
 
 
