@@ -5,6 +5,7 @@
     push rdi
     push rcx
     push rbx
+    push rdx
     mov edi, %1
     mov esi, %2
     getStringLength edi
@@ -14,7 +15,7 @@
     jne %%out
     repe cmpsb
     %%out:
-    
+    pop rdx
     pop rbx
     pop rcx
     pop rsi
@@ -44,8 +45,8 @@ strcmpArr:
         lea esi, [eax + 8*ecx]
         inc ecx
         
-        cmp esi, arrayEnd
+        cmp esi, [rsp + 24]
         jne .intro
     .match:
     
-    ret 16
+    ret 24

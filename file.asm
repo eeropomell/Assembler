@@ -13,7 +13,7 @@ M=D
 @17
 A=M
 M=-1
-@ww
+@THIS
 @17
 D=M
 @R50
@@ -26,3 +26,4 @@ MD=M-1
 D;JGT
 @23
 0;JMP
+@KBD

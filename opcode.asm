@@ -45,16 +45,19 @@ section .data
     dora db "D|A", 0
     dorm db "D|M", 0
 
-    predefined dq "R0", "R1", "R2"
+    registers dq "R0", "R1", "R2"
     dq "R3", "R4", "R5"
     dq "R6", "R7", "R8" 
     dq "R9", "R10", "R11"
     dq "R12", "R13", "R14", "R15"
-    dq "SCREEN", "KBD", "SP"
+    registersEnd db 0
+    
+    predefined dq "SCREEN", "KBD", "SP"
     dq "LCL", "ARG", "THIS", "THAT"
-    arrayEnd db 0
+    predefinedEnd db 0
 
-    t_predefined db "1"
+    t_predefined dq "16384", "24576", "0"
+    dq "1", "2", "3", "4"
 
 section .bss 
     tempString resb 6
@@ -72,30 +75,41 @@ section .text
         cmp byte [symbol], "R"
         jne skip    
 
+        push registersEnd
         push symbol
-        push predefined
+        push registers
         call strcmpArr
-        cmp esi, arrayEnd 
+        cmp esi, registersEnd 
         je skip2
-
         mov esi, symbol + 1
         mov edi, symbol
         mov ecx, 6
         repe movsb
-        
+
         skip:
         cmp byte [symbol], "R"
         je skip2
-        lea edi, [predefined + 4 * 16]
+        
+        push predefinedEnd
         push symbol
-        push rdi
+        push predefined
         call strcmpArr
-        cmp esi, arrayEnd
+        cmp esi, predefinedEnd
         je skip2 
-        printNumber 3
+        dec ecx
+        push symbol
+        push 0
+        push 6
+        call clear
+      
+        lea esi, [t_predefined + 8*ecx]
+        mov edi, symbol
+        .move:
+            movsb
+            cmp byte [esi], 0
+            jne .move
+        
         skip2:
-
-     
         ret
 
     ; OPCODE FOR COMP
