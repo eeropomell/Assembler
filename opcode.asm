@@ -1,4 +1,4 @@
-
+%include "string.asm"
 
 section .data
     null db "null", 0
@@ -10,7 +10,6 @@ section .data
     AD db "AD", 0
     ADM db "ADM", 0
     MD db "MD", 0
-
 
     jJGT db "JGT", 0
     jJGE db "JGE", 0
@@ -46,17 +45,46 @@ section .data
     dora db "D|A", 0
     dorm db "D|M", 0
 
+    predefined dd "R0", "R1", "R2", 
+    dd "R3", "R4", "R5", 
+    dd "R6", "R7", "R8", 
+    dd "R9", "R10", "R11", 
+    dd "R12", "R13", "R14", "R15"
+    dd "SCREEN", "KBD", "SP"
+    dd "LCL", "ARG", "THIS", "THAT"
+    arrayEnd db 0
+
+section .bss 
+    tempString resb 4
 
 section .text
-    
-%macro strcmp 2
-    push rdi
-    mov edi, %1
-    getStringLength edi
-    mov esi, %2
-    repe cmpsb
-    pop rdi
-%endmacro
+
+    handlePredefined:
+        xor eax, eax
+
+        push symbol
+        push 16
+        push predefined 
+        call strcmpArr
+
+        skip:
+        lea edi, [predefined + 4 * 16]
+        
+
+        
+        endOfArray:
+        
+
+        
+        
+        
+        
+
+
+        
+        
+
+        ret
 
     ; OPCODE FOR COMP
     compop:

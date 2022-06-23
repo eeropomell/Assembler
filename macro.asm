@@ -17,27 +17,12 @@ false equ 0
 
 
 section .bss
-    digit resb 0
-    length resb 1
-    number resq 1
     buffer resb 320
-    buffer2 resb 10
-    result resd 1
-    temp resb 20
-    tempString resb 20
-
+    digit resb 10
 
 section .data
     newline db 10
-    carriage db 13
     space db 32
-    minus db false
-    point db false
-
-
-    sign db 0
-    exponent dw 0
-    fraction dd 0
 
 ; for printing numbers (int)
 

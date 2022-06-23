@@ -28,7 +28,7 @@ section .data
     opcode db "0000000000000000"
     
     lastround db false
-    
+
 section .text
     global _start 
         
@@ -89,6 +89,18 @@ section .text
 
             a_instruction:
             call getSymbol          ; for example @150 symbol = "150"
+
+            cmp byte [symbol], "0"
+            jl handle 
+            cmp byte [symbol], "9"
+            jg handle 
+            jmp donthandle
+
+            handle:
+            call handlePredefined
+            donthandle:
+            
+             
             stringToNumber symbol
             call binaryString
 
@@ -98,7 +110,7 @@ section .text
             call clear
 
             iteration:   
-                print opcode, 16
+                
                 print newline, 1
 
                 push opcode             ; clear opcode for next iteration
@@ -112,6 +124,8 @@ section .text
         theEnd:
 
         exit
+
+        
 
 
         binaryString:                   ; convert A instruction to binary version
@@ -284,10 +298,13 @@ section .text
 
 
         clear:
-            mov edi, [rsp + 24]         ; address to be cleared
-            mov al, [rsp + 16]          
-            mov ecx, [rsp + 8]
+            mov rbp, rsp
+            push rcx
+            mov edi, [rbp + 24]         ; address to be cleared
+            mov al, [rbp + 16]          
+            mov ecx, [rbp + 8]
             repe stosb
+            pop rcx
             ret 24
 
 
