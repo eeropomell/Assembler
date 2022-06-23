@@ -46,29 +46,39 @@ section .data
     dorm db "D|M", 0
 
     
-    destM db "M", "MD", 0
-    destD db "D", "DM", 0
-    destA db "A", "AD", "AM", "ADM", 0
+    destM dd "M", "MD"
+    mDestEnd db 0
+    mDestCode db "001", "011"
+    destD dd "D", "DM"
+    dDestEnd db 0
+    dDestCode db "010", "011"
+    destA dd "A", "AD", "AM", "ADM"
+    aDestEnd db 0
+    aDestCode db "100", "101" 
+    
+
+
     destTable:
         dq destM
+        dq mDestEnd
+        dq mDestCode
         dq destD
-        dq destA
+        dq dDestEnd
+        dq dDestCode
+        dq destA 
+        dq aDestEnd
+        dq aDestCode
+    
 
-    destMcode db "001", "011", 0
-    destDcode db "010", "011", 0
-    destAcode db "100", "101", "110", "111", 0
-    destCodeTable:
-        dq destMcode
-        dq destDcode
-        dq destAcode
+        
 
+    
 
-
-    registers dq "R0", "R1", "R2"
-    dq "R3", "R4", "R5"
-    dq "R6", "R7", "R8" 
-    dq "R9", "R10", "R11"
-    dq "R12", "R13", "R14", "R15"
+    registers dd "R0", "R1", "R2"
+    dd "R3", "R4", "R5"
+    dd "R6", "R7", "R8" 
+    dd "R9", "R10", "R11"
+    dd "R12", "R13", "R14", "R15"
     registersEnd db 0
     
     predefined dq "SCREEN", "KBD", "SP"
@@ -98,6 +108,7 @@ section .text
         cmp byte [symbol + 1], "9"
         jg skip
 
+        push 4
         push registersEnd
         push symbol
         push registers
@@ -113,6 +124,7 @@ section .text
         cmp byte [symbol], "R"
         je skip2
         
+        push 8
         push predefinedEnd
         push symbol
         push predefined
@@ -133,13 +145,44 @@ section .text
             jne .move
         
         skip2:
+        
+        
         ret
 
             ; OPCODE FOR DESTINATION
     destop:
-      
-        print dest, 3
-     
+        push rdi
+        push rsi
+        mov edx, 0
+        cmp byte [dest], "M"
+        cmove r8, [destTable]
+        cmove r9, [destTable + 8]
+        cmove r10, [destTable + 16]
+        cmp byte [dest], "D"
+        cmove r8, [destTable + 24]
+        cmove r9, [destTable + 32]
+        cmove r10, [destTable + 40]
+        cmp byte [dest], "A"
+        cmove r8, [destTable + 48]
+        cmove r9, [destTable + 56]
+        cmove r10, [destTable + 64]
+
+        push 4
+        push r9
+        push dest 
+        push r8
+        call strcmpArr
+        dec rcx
+        lea r8, [r10 + rcx]
+        xor r9, r9
+        mov r9b, [r8]
+        mov edi, dest 
+        mov esi, r8d
+        mov ecx, 3
+        repe movsb
+        
+        pop rsi
+        pop rdi
         ret
 
     ; OPCODE FOR COMP

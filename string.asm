@@ -11,6 +11,7 @@
     getStringLength edi
     mov eax, ecx
     getStringLength esi
+    
     cmp eax, ecx
     jne %%out
     repe cmpsb
@@ -27,10 +28,10 @@ section .text
 strcmpArr:
      
     mov ecx, 1
-    mov esi, [rsp + 8]
-    mov ebx, [rsp + 16]
+    mov rsi, [rsp + 8]
+    mov rbx, [rsp + 16]
     .intro:
-        mov edi, tempString
+        mov rdi, tempString
         .move:
             movsb
             cmp byte [esi], 0
@@ -41,12 +42,21 @@ strcmpArr:
         push 0
         push 6
         call clear
-        mov eax, [rsp + 8]
-        lea esi, [eax + 8*ecx]
+        mov rax, [rsp + 8]
+        mov rdx, [rsp + 32]
+        imul rdx, rcx
+        lea rsi, [rax + rdx]
         inc ecx
         
-        cmp esi, [rsp + 24]
-        jne .intro
+        cmp rsi, [rsp + 24]
+        jnge .intro
+        mov ecx, 11
+
     .match:
+        push tempString
+        push 0
+        push 6
+        call clear
     
-    ret 24
+    
+    ret 32

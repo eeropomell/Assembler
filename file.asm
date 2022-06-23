@@ -9,6 +9,7 @@ D;JLE
 M=D
 @SCREEN
 @16384
+ADM=A
 D=A
 @17
 M=D
@@ -22,6 +23,7 @@ D=M
 D=D+A
 @17
 M=D
+@R15
 @16
 MD=M-1
 @R10
