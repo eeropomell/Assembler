@@ -45,11 +45,6 @@ section .data
     dora db "D|A", 0
     dorm db "D|M", 0
 
-    jumpTable:
-        db "JEQ" "JGE", "JGT"
-        db "JLE", "JLT", "JME", "JMP"
-
-        
 
     
     destM dd "M", "MD"
@@ -94,14 +89,42 @@ section .data
     t_predefined dq "16384", "24576", "0"
     dq "1", "2", "3", "4"
 
+
+    jumpTable db "JEQ", "JGE", "JGT"
+    db "JLE", "JLT", "JNE", "JMP", 0
+
+    jmpPtr:
+        dq jumpTable
+        dq jumpTable + 15
+
 section .bss 
     tempString resb 6
 
 section .text
 
 
-    destProc:
-        
+    jumpProc:
+        push rdi
+        push rcx
+        push rsi
+        xor eax, eax
+        mov rbx, [jmpPtr + 8]               ; end pointer
+        mov rsi, [jmpPtr]                   ; start pointer
+
+        getMid:
+            mov rdi, rbx                        
+            sub rdi, rsi
+            shr rdi, 1                      ; divide by 2
+            lea rsi, [rsi + rdi]
+            mov edi, tempString
+            mov ecx, 3
+            repe movsb
+        print tempString, 3
+
+        pop rsi
+        pop rcx
+        pop rdi
+        ret
     
 
 

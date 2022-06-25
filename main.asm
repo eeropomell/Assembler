@@ -74,7 +74,7 @@ section .text
             jumpfield:
             cmp byte [jump], 0      ; jump field is optional
             jz cleanup
-            call jumpop             
+            call jumpProc            
             push op
             push 3
             call fill
