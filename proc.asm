@@ -24,7 +24,10 @@ binarySearch:
         shr ebx, 1 
         add ebx, eax
         mov edi, [rbp + 24]                 ; table address
-        lea rsi, [edi + 4*ebx]
+        mov ecx, [rbp + 32]
+        imul ecx, ebx
+        lea rsi, [edi + ecx]
+        
 
         mov edi, tempString
         .move:
@@ -58,16 +61,17 @@ binarySearch:
             mov ecx, 6
             repe stosb
             pop rax
-
-            jmp getMid
-
-                   
+            
+            cmp rax, rdx
+            jl getMid
+            mov eax, -1
+                
     found:
     pop rsi
     pop rcx
     pop rdi
 
-    ret 24
+    ret 32
 
 strcmpArr:
     mov ecx, 1

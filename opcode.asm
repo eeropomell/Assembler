@@ -68,6 +68,21 @@ section .data
     t_predefined dq "16384", "24576", "0"
     dq "1", "2", "3", "4"
 
+    predefinedTable:
+        dq "ARG", "KBD", "LCL",
+        dq "R0", "R1", "R10", "R11"
+        dq "R12", "R13", "R14", "R15"
+        dq "R2", "R3", "R4", "R5"
+        dq "R6", "R7", "R8", "R9"
+        dq "SCREEN", "SP", "THAT", "THIS", 0
+    predefinedCodes:
+        dq "2", "16384", "1", "0"
+        dq "1", "10", "11", "12"
+        dq "13", "14", "15", "2"
+        dq "3", "4", "5", "6"
+        dq "7", "8", "9", "24576"
+        dq "0", "3", "4", 0
+
 
     jumpTable:
         dd "JEQ", "JGE", "JGT"
@@ -89,79 +104,28 @@ section .bss
 
 section .text
 
-
+    ; OPCODE FOR JUMP
     jumpProc:
-        print jump, 6
+        
+        push 4
         push jumpTable
         push jump 
         push 6                      ; last item index
         call binarySearch
+        
         
         lea esi, [jumpCodes + 3*ebx]
         push jump 
         push rsi
         push 3
         call strcopy
-        print jump, 3
-        ret
-
-    handlePredefined:
-        xor eax, eax
-        mov esi, predefined
-        mov ecx, 0   
-
-
-        cmp byte [symbol], "R"
-        jne skip 
-        cmp byte [symbol + 1], "0"
-        jl skip 
-        cmp byte [symbol + 1], "9"
-        jg skip
-
-        push 4
-        push registersEnd
-        push symbol
-        push registers
-        call strcmpArr
-        cmp esi, registersEnd 
-        je skip2
-        mov esi, symbol + 1
-        mov edi, symbol
-        mov ecx, 6
-        repe movsb
-
-        skip:
-        cmp byte [symbol], "R"
-        je skip2
-        
-        push 8
-        push predefinedEnd
-        push symbol
-        push predefined
-        call strcmpArr
-        cmp esi, predefinedEnd
-        je skip2 
-        dec ecx
-        push symbol
-        push 0
-        push 6
-        call clear
-      
-        lea esi, [t_predefined + 8*ecx]
-        mov edi, symbol
-        .move:
-            movsb
-            cmp byte [esi], 0
-            jne .move
-        
-        skip2:
         
         
         ret
 
-            ; OPCODE FOR DESTINATION
+     ; OPCODE FOR DESTINATION
     destop:
-        print dest, 3
+        push 4
         push destTable
         push dest 
         push 7
@@ -172,15 +136,44 @@ section .text
         push rsi
         push 3
         call strcopy
-        print dest, 3
         
         push tempString
         push 0
         push 6
         call clear
         
-
         ret
+
+    handlePredefined:
+        print symbol, 6
+        push 8
+        push predefinedTable
+        push symbol
+        push 22
+        call binarySearch
+        
+        
+        
+        lea esi, [predefinedCodes + 8*ebx]
+        push symbol
+        push rsi
+        push 8
+        call strcopy
+        print symbol, 6
+        jmp endpredifined
+        
+        variable:
+
+        endpredifined:
+        push tempString
+        push 0
+        push 6
+        call clear
+        
+
+        
+        ret
+
 
     ; OPCODE FOR COMP
     compop:
