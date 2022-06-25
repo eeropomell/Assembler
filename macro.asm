@@ -24,6 +24,33 @@ section .data
     newline db 10
     space db 32
 
+
+%macro strcmp 2
+    push rdi
+    push rsi
+    push rcx
+    push rbx
+    push rdx
+    push rax
+    mov edi, %1
+    mov esi, %2
+    getStringLength edi
+    mov eax, ecx
+    getStringLength esi
+    
+    cmp eax, ecx
+    jne %%out
+
+    repe cmpsb
+    %%out:
+    pop rax
+    pop rdx
+    pop rbx
+    pop rcx
+    pop rsi
+    pop rdi
+%endmacro
+
 ; for printing numbers (int)
 
 %macro printNumber 1

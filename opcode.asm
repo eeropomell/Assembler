@@ -1,4 +1,4 @@
-%include "string.asm"
+%include "proc.asm"
 
 section .data
     null db "null", 0
@@ -47,28 +47,7 @@ section .data
 
 
     
-    destM dd "M", "MD"
-    mDestEnd db 0
-    mDestCode db "001", "011"
-    destD dd "D", "DM"
-    dDestEnd db 0
-    dDestCode db "010", "011"
-    destA dd "A", "AD", "AM", "ADM"
-    aDestEnd db 0
-    aDestCode db "100", "101" 
     
-
-
-    destTable:
-        dq destM
-        dq mDestEnd
-        dq mDestCode
-        dq destD
-        dq dDestEnd
-        dq dDestCode
-        dq destA 
-        dq aDestEnd
-        dq aDestCode
     
 
         
@@ -90,8 +69,13 @@ section .data
     dq "1", "2", "3", "4"
 
 
-    jumpTable db "JEQ", "JGE", "JGT"
-    db "JLE", "JLT", "JMP", "JNE", 0
+    jumpTable dd "JEQ", "JGE", "JGT"
+    dd "JLE", "JLT", "JMP", "JNE", 0
+
+    destTable dd "A", "AD", "ADM", "AM"
+    dd "D", "DM", "M", "MD", 0
+
+    
         
 
 section .bss 
@@ -101,66 +85,12 @@ section .text
 
 
     jumpProc:
-        push rdi
-        push rcx
-        push rsi
-        mov eax, 0                      ; first 
-        mov edx, 6                      ; last
-        
-        mov r10, 0
-        getMid:  
-            inc r10      
-            mov ebx, edx
-            sub ebx, eax
-            shr ebx, 1   
-           
-            
-            
-            lea rsi, [jumpTable + 3*eax]
-            mov r8d, ebx
-            imul r8d, 3
-            
-            add rsi, r8
-            mov rdi, tempString
-            mov ecx, 3
-            repe movsb
-
-    
-            strcmp jump, tempString
-            jz found
-            mov ebp, ebx
-            dec ebp
-            mov ebx, eax
-            inc ebx
-
-            mov ecx, -1
-            mov rdi, jump 
-            mov rsi, tempString
-            .compare:
-                inc ecx
-                mov r8b, [rdi + rcx]  
-                cmp r8b, [rsi + rcx]
-                je .compare
-                cmova eax, ebx
-                cmovl edx, ebp
-
-                jmp getMid
-
-        found:
-        printNumber rbx
-        printNumber rax
-        
-        
-
-        
-
-        
-        pop rsi
-        pop rcx
-        pop rdi
+        push jumpTable
+        push jump 
+        push 6                      ; last item index
+        call binarySearch
         ret
     
-
 
     handlePredefined:
         xor eax, eax
@@ -218,38 +148,16 @@ section .text
 
             ; OPCODE FOR DESTINATION
     destop:
-        push rdi
-        push rsi
-        mov edx, 0
-        cmp byte [dest], "M"
-        cmove r8, [destTable]
-        cmove r9, [destTable + 8]
-        cmove r10, [destTable + 16]
-        cmp byte [dest], "D"
-        cmove r8, [destTable + 24]
-        cmove r9, [destTable + 32]
-        cmove r10, [destTable + 40]
-        cmp byte [dest], "A"
-        cmove r8, [destTable + 48]
-        cmove r9, [destTable + 56]
-        cmove r10, [destTable + 64]
-
-        push 4
-        push r9
-        push dest 
-        push r8
-        call strcmpArr
-        dec rcx
-        lea r8, [r10 + rcx]
-        xor r9, r9
-        mov r9b, [r8]
-        mov edi, dest 
-        mov esi, r8d
-        mov ecx, 3
-        repe movsb
+        ;print dest, 5
+        ;push destTable
+        ;push dest 
+        ;push 7
+        ;push 4
+        ;call binarySearch
         
-        pop rsi
-        pop rdi
+        
+        
+        
         ret
 
     ; OPCODE FOR COMP

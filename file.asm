@@ -29,7 +29,7 @@ D=M
 D=D+A
 @17
 D=D+1;JMP
-0;JMP
+0;JGT
 M=D
 @R15
 @16
