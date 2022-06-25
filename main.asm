@@ -63,7 +63,7 @@ section .text
             cmp byte [dest], 0      ; destination field is optional
             jz nodest
             call destop         
-            push op
+            push dest
             push 3
             call fill   
             jmp jumpfield  

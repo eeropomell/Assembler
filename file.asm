@@ -38,3 +38,13 @@ MD=M-1
 0;JNE
 @23
 @KBD
+A=1
+AM=1
+AD=1
+ADM=1
+D=1
+DM=1
+M=1
+MD=1
+
+

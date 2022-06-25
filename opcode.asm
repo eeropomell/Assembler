@@ -69,14 +69,20 @@ section .data
     dq "1", "2", "3", "4"
 
 
-    jumpTable dd "JEQ", "JGE", "JGT"
-    dd "JLE", "JLT", "JMP", "JNE", 0
+    jumpTable:
+        dd "JEQ", "JGE", "JGT"
+        dd "JLE", "JLT", "JMP", "JNE", 0
+    jumpCodes:
+        db "010", "011", "001", "110"
+        db "100", "111", "101", 0
 
-    destTable dd "A", "AD", "ADM", "AM"
-    dd "D", "DM", "M", "MD", 0
-
-    
-        
+    destTable:
+        dd "A", "AD", "ADM", "AM"
+        dd "D", "DM", "M", "MD", 0
+    destCodes:
+        db "100", "110", "111", "101"
+        db "010", "011", "001", "011", 0
+       
 
 section .bss 
     tempString resb 6
@@ -85,12 +91,19 @@ section .text
 
 
     jumpProc:
+        print jump, 6
         push jumpTable
         push jump 
         push 6                      ; last item index
         call binarySearch
+        
+        lea esi, [jumpCodes + 3*ebx]
+        push jump 
+        push rsi
+        push 3
+        call strcopy
+        print jump, 3
         ret
-    
 
     handlePredefined:
         xor eax, eax
@@ -148,16 +161,25 @@ section .text
 
             ; OPCODE FOR DESTINATION
     destop:
-        ;print dest, 5
-        ;push destTable
-        ;push dest 
-        ;push 7
-        ;push 4
-        ;call binarySearch
+        print dest, 3
+        push destTable
+        push dest 
+        push 7
+        call binarySearch
+
+        lea esi, [destCodes + 3*ebx]
+        push dest
+        push rsi
+        push 3
+        call strcopy
+        print dest, 3
         
+        push tempString
+        push 0
+        push 6
+        call clear
         
-        
-        
+
         ret
 
     ; OPCODE FOR COMP

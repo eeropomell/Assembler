@@ -1,42 +1,44 @@
 section .text
 
 
+strcopy:
+    mov edi, [rsp + 24]
+    mov esi, [rsp + 16]
+    mov ecx, [rsp + 8]
+    repe movsb
+    ret 24
 
 binarySearch:
     mov rbp, rsp
     push rdi
     push rcx
     push rsi
-    mov eax, 0                              ; first 
-    mov edx, [rbp + 8]                      ; last
-    
+    mov eax, 0                              ; index of first item
+    mov edx, [rbp + 8]                      ; index of last item
 
-    getMid:      
+    mov r10, 0
+    getMid:   
+        inc r10   
         mov ebx, edx
         sub ebx, eax
         shr ebx, 1 
+        add ebx, eax
         mov edi, [rbp + 24]                 ; table address
-        lea rsi, [edi + 4*eax]
+        lea rsi, [edi + 4*ebx]
 
-        mov r8d, ebx
-        imul r8d, 4                         ; size of item
-        add rsi, r8
-       
-        
         mov edi, tempString
         .move:
             movsb
             cmp byte [esi], 0
             jnz .move
         
-    
         mov ecx, [rbp + 16]                 ; field to search (jump, comp, or dest)
         strcmp ecx, tempString
         jz found
         mov r9d, ebx
         dec r9d
-        mov ebx, eax
         inc ebx
+        
 
         mov ecx, -1
         mov rdi, [rbp + 16] 
@@ -48,16 +50,19 @@ binarySearch:
             je .compare
             cmova eax, ebx
             cmovl edx, r9d
+
+            .iteration:
+            push rax
+            mov edi, tempString                 ; clear up for next iteration
+            mov al, 0
+            mov ecx, 6
+            repe stosb
+            pop rax
+
             jmp getMid
 
-            
-
+                   
     found:
-    printNumber rax
-    printNumber rbx
-    
-        
-
     pop rsi
     pop rcx
     pop rdi
