@@ -2,10 +2,11 @@
 
 %macro strcmp 2
     push rdi
-    push rdi
+    push rsi
     push rcx
     push rbx
     push rdx
+    push rax
     mov edi, %1
     mov esi, %2
     getStringLength edi
@@ -16,6 +17,7 @@
     jne %%out
     repe cmpsb
     %%out:
+    pop rax
     pop rdx
     pop rbx
     pop rcx

@@ -27,7 +27,6 @@ M=D
 @16
 MD=M-1
 @R10
-D;JGT
 @23
 0;JMP
 @KBD

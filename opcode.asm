@@ -91,11 +91,8 @@ section .data
 
 
     jumpTable db "JEQ", "JGE", "JGT"
-    db "JLE", "JLT", "JNE", "JMP", 0
-
-    jmpPtr:
-        dq jumpTable
-        dq jumpTable + 15
+    db "JLE", "JLT", "JMP", "JNE", 0
+        
 
 section .bss 
     tempString resb 6
@@ -107,20 +104,52 @@ section .text
         push rdi
         push rcx
         push rsi
-        xor eax, eax
-        mov rbx, [jmpPtr + 8]               ; end pointer
-        mov rsi, [jmpPtr]                   ; start pointer
-
+        mov eax, 0                      ; first 
+        mov edx, 6                      ; last
+        
+        mov r10, 0
         getMid:
-            mov rdi, rbx                        
-            sub rdi, rsi
-            shr rdi, 1                      ; divide by 2
-            lea rsi, [rsi + rdi]
-            mov edi, tempString
+            inc r10
+            mov ebx, edx
+            sub ebx, eax
+            shr ebx, 1
+            
+            
+            lea rsi, [jumpTable + 3*eax]
+            mov r8d, ebx
+            imul r8d, 3
+            add rsi, r8
+            mov rdi, tempString
             mov ecx, 3
             repe movsb
-        print tempString, 3
 
+            strcmp jump, tempString
+            jz found
+            mov ebp, ebx
+            dec ebp
+            inc ebx
+
+            mov ecx, -1
+            mov rdi, jump 
+            mov rsi, tempString
+            .compare:
+                inc ecx
+                mov r8b, [rdi + rcx]  
+                cmp r8b, [rsi + rcx]
+                je .compare
+                cmova eax, ebx
+                cmovl edx, ebp
+                jmp getMid
+                
+        found:
+
+        
+        
+            
+            
+            
+                  
+        
         pop rsi
         pop rcx
         pop rdi
