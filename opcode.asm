@@ -45,6 +45,12 @@ section .data
     dora db "D|A", 0
     dorm db "D|M", 0
 
+    jumpTable:
+        db "JEQ" "JGE", "JGT"
+        db "JLE", "JLT", "JME", "JMP"
+
+        
+
     
     destM dd "M", "MD"
     mDestEnd db 0
@@ -92,6 +98,10 @@ section .bss
     tempString resb 6
 
 section .text
+
+
+    destProc:
+        
     
 
 

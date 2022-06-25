@@ -110,7 +110,7 @@ section .text
             call clear
 
             iteration:   
-                print opcode, 16
+                
                 print newline, 1
 
                 push opcode             ; clear opcode for next iteration
