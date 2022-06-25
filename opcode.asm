@@ -108,25 +108,29 @@ section .text
         mov edx, 6                      ; last
         
         mov r10, 0
-        getMid:
-            inc r10
+        getMid:  
+            inc r10      
             mov ebx, edx
             sub ebx, eax
-            shr ebx, 1
+            shr ebx, 1   
+           
             
             
             lea rsi, [jumpTable + 3*eax]
             mov r8d, ebx
             imul r8d, 3
+            
             add rsi, r8
             mov rdi, tempString
             mov ecx, 3
             repe movsb
 
+    
             strcmp jump, tempString
             jz found
             mov ebp, ebx
             dec ebp
+            mov ebx, eax
             inc ebx
 
             mov ecx, -1
@@ -139,16 +143,17 @@ section .text
                 je .compare
                 cmova eax, ebx
                 cmovl edx, ebp
+
                 jmp getMid
-                
+
         found:
+        printNumber rbx
+        printNumber rax
+        
+        
 
         
-        
-            
-            
-            
-                  
+
         
         pop rsi
         pop rcx

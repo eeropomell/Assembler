@@ -15,6 +15,7 @@
     
     cmp eax, ecx
     jne %%out
+
     repe cmpsb
     %%out:
     pop rax

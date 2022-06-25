@@ -74,6 +74,7 @@ section .text
             jumpfield:
             cmp byte [jump], 0      ; jump field is optional
             jz cleanup
+            
             call jumpProc            
             push op
             push 3
@@ -205,6 +206,7 @@ section .text
                     cmp byte [esi], 0
                     jnz .loop  
             out:
+            mov byte [jump + 3], 0
             ret
 
         getSymbol:             

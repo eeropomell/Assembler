@@ -4,7 +4,6 @@ D=M
 @R2
 @R3
 @R4
-D;JLE
 @16
 M=D
 @SCREEN
@@ -13,6 +12,13 @@ ADM=A
 D=A
 @17
 M=D
+0;JEQ
+0;JGT
+0;JGE
+0;JLT
+0;JNE
+0;JLE
+0;JMP
 @17
 A=M
 M=-1
@@ -22,11 +28,13 @@ D=M
 @R50
 D=D+A
 @17
+D=D+1;JMP
+0;JMP
 M=D
 @R15
 @16
 MD=M-1
 @R10
+0;JNE
 @23
-0;JMP
 @KBD
