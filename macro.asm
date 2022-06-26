@@ -25,6 +25,23 @@ section .data
     space db 32
 
 
+%macro numberToString 2
+    mov eax, %1
+    mov edi, %2
+    %%loop:
+        mov bx, 10
+        cdq
+        div bx
+        add dl, 30h
+        mov [edi], dl
+        dec edi
+        cmp eax, 0
+        jnz %%loop
+        inc edi
+    
+
+%endmacro
+
 %macro strcmp 2
     push rdi
     push rsi

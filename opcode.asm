@@ -33,6 +33,7 @@ section .data
        
 section .bss 
     tempString resb 6
+    tempStr2 resb 6
 
 
 
@@ -115,7 +116,6 @@ section .text
 
     symbolOP:
         push rdi
-
         push 8
         push symbolTable
         push symbol
@@ -133,8 +133,17 @@ section .text
         jmp endsymbol
         
         newSymbol:
-        printNumber r15
+        inc r15
+        printNumber 2
+        mov edi, tempString + 1
+        numberToString r14d, edi
 
+        mov eax, [symbol]
+        mov qword [symbolTable + 8*r15], rax
+        mov rax, [rdi]
+        mov qword [symbolCodes + 8*r15], rax
+        mov [symbol], rax 
+        inc r14
         
 
         endsymbol:

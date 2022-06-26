@@ -1,3 +1,3 @@
 @sum
-@SCREEN
-@R4
+@sum
+@suw
