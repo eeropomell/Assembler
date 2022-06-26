@@ -72,6 +72,8 @@ binarySearch:
 
     ret 32
 
+
+
 getAcode:
     mov ecx, 1
     cmp rbx, 23

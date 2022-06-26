@@ -1,22 +1,9 @@
 %include "proc.asm"
 
+
+
+
 section .data
-
-    predefinedTable:
-        dq "ARG", "KBD", "LCL",
-        dq "R0", "R1", "R10", "R11"
-        dq "R12", "R13", "R14", "R15"
-        dq "R2", "R3", "R4", "R5"
-        dq "R6", "R7", "R8", "R9"
-        dq "SCREEN", "SP", "THAT", "THIS", 0
-    predefinedCodes:
-        dq "2", "16384", "1", "0"
-        dq "1", "10", "11", "12"
-        dq "13", "14", "15", "2"
-        dq "3", "4", "5", "6"
-        dq "7", "8", "9", "24576"
-        dq "0", "3", "4", 0
-
 
     jumpTable:
         dd "JEQ", "JGE", "JGT"
@@ -46,6 +33,8 @@ section .data
        
 section .bss 
     tempString resb 6
+
+
 
 section .text
 
@@ -124,27 +113,31 @@ section .text
         pop rdi
         ret
 
-    handlePredefined:
+    symbolOP:
         push rdi
+
         push 8
-        push predefinedTable
+        push symbolTable
         push symbol
-        push 22
+        push r15                            ; table length
         call binarySearch
-        cmp ebx, 69                         ; if symbol is not predefined
-        je variable
+        cmp ebx, 69                         ; if symbol is not already in the table
+        je newSymbol
            
-        lea esi, [predefinedCodes + 8*ebx]
+        lea esi, [symbolCodes + 8*ebx]
         push symbol
         push rsi
         push 8
         call strcopy
         
-        jmp endpredifined
+        jmp endsymbol
         
-        variable:
+        newSymbol:
+        printNumber r15
 
-        endpredifined:
+        
+
+        endsymbol:
         push tempString
         push 0
         push 6
@@ -153,6 +146,8 @@ section .text
 
         pop rdi
         ret
+
+
 
 
 

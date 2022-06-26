@@ -1,5 +1,7 @@
 %include "macro.asm"
 %include "opcode.asm"
+%include "symbolTable.asm"
+
 
 section .bss 
     line resb 10
@@ -10,11 +12,12 @@ section .bss
     jump resb 6
     dest resb 6
 
-    op resb 64
-
     fileptr resb 64
     totalBytes resb 4
     bytenum resb 4
+
+    symbolTable resb 1000
+    symbolCodes resb 1000
 
 A_INSTRUCTION equ 0
 C_INSTRUCTION equ 1
@@ -39,7 +42,7 @@ section .text
         push rax            ; file descriptor
 
         call readfile       
-
+        call initSymbolTable
         main: 
             call getline
             
@@ -101,8 +104,9 @@ section .text
             jmp donthandle
 
             handle:
-            call handlePredefined
+            call symbolOP
             donthandle:
+            
             
              
             stringToNumber symbol
@@ -114,7 +118,7 @@ section .text
             call clear
 
             iteration:   
-                print opcode, 16
+                
                 print newline, 1
 
                 push opcode                      ; clear opcode for next iteration
@@ -128,9 +132,6 @@ section .text
         theEnd:
 
         exit
-
-        
-
 
         binaryString:                               ; convert A instruction to binary version
             mov eax, edi
@@ -146,7 +147,6 @@ section .text
                 loop binary
             ret
         
-
         instructionType:
             mov edi, line
             .whitespace:
