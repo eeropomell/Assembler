@@ -43,6 +43,11 @@ section .text
 
         call readfile       
         call initSymbolTable
+
+        firstWave:
+            
+
+
         main: 
             call getline
             
@@ -156,18 +161,15 @@ section .text
                 jmp .whitespace
             .out:
     
-            cmp byte [edi], "@"                             ; @xxx = A_INSTRUCTION
-            jne .around1
-            mov byte [instructionT], A_INSTRUCTION
-            jmp .end
-            .around1: 
-            cmp byte [edi], "("                             ; (label) = L_INSTRUCTION
-            jne .around2
-            mov byte [instructionT], L_INSTRUCTION
-            jmp .end
-            .around2:
-            mov byte [instructionT], C_INSTRUCTION          ; default = C_INSTRUCTION
-            .end:
+
+            mov eax, C_INSTRUCTION
+            mov ebx, A_INSTRUCTION 
+            mov ecx, L_INSTRUCTION
+            cmp byte [edi], "@"
+            cmove eax, ebx
+            cmp byte [edi], "("
+            cmove eax, ecx
+            mov [instructionT], eax
             
             ret 
           

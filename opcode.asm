@@ -134,7 +134,6 @@ section .text
         
         newSymbol:
         inc r15
-        printNumber 2
         mov edi, tempString + 1
         numberToString r14d, edi
 
