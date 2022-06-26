@@ -51,37 +51,35 @@ section .text
 
 
     compOP:
-        print comp, 6
+        push rdi
         push 4
         push compTable
         push comp 
         push 27
         call binarySearch
-        xor eax, eax
         
         lea rsi, [compCodes + 8*ebx]
         push comp 
         push rsi 
         push 6
         call strcopy
-        print space, 1
-        print comp, 6
-        
-
-        mov ecx, 1
+     
         xor eax, eax
-        call getAcode
-        
+        call getAcode               ; 0 or 1 depending on comp
 
-        
-        
+        push tempString
+        push 0
+        push 6
+        call clear
 
-        
+        pop rdi
         ret
 
+        
     ; OPCODE FOR JUMP
     jumpOP:
-        printNumber 1
+        push rdi
+
         push 4
         push jumpTable
         push jump 
@@ -95,13 +93,17 @@ section .text
         push 3
         call strcopy
         
-        
-        
+        push tempString
+        push 0
+        push 6
+        call clear
+
+        pop rdi
         ret
 
      ; OPCODE FOR DESTINATION
     destOP:
-
+        push rdi
         push 4
         push destTable
         push dest 
@@ -119,10 +121,11 @@ section .text
         push 0
         push 6
         call clear
-        
+        pop rdi
         ret
 
     handlePredefined:
+        push rdi
         push 8
         push predefinedTable
         push symbol
@@ -148,7 +151,7 @@ section .text
         call clear
         
 
-        
+        pop rdi
         ret
 
 

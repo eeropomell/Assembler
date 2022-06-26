@@ -56,10 +56,13 @@ section .text
             repe stosb
             inc edi                     
             call compOP                         ; opcode for comp field
-            push comp
+            add al, 30h
+            mov [opcode + 3], al
+            push comp 
             push 6
             call fill
             
+
             cmp byte [dest], 0                  ; destination field is optional
             jz nodest
             call destOP        
@@ -111,7 +114,7 @@ section .text
             call clear
 
             iteration:   
-                
+                print opcode, 16
                 print newline, 1
 
                 push opcode                      ; clear opcode for next iteration
