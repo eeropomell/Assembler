@@ -32,9 +32,7 @@ section .data
         dq "010011", "010101", "010101", "110000", "110111", "110010", "000111", 0
        
 section .bss 
-    tempString resb 6
-    tempStr2 resb 6
-
+    tempString resb 20
 
 
 section .text
@@ -59,7 +57,7 @@ section .text
 
         push tempString
         push 0
-        push 6
+        push 20
         call clear
 
         pop rdi
@@ -85,7 +83,7 @@ section .text
         
         push tempString
         push 0
-        push 6
+        push 20
         call clear
 
         pop rdi
@@ -109,7 +107,7 @@ section .text
         
         push tempString
         push 0
-        push 6
+        push 20
         call clear
         pop rdi
         ret
@@ -131,19 +129,18 @@ section .text
 
         push symbol 
         push 0
-        push 10
+        push 20
         call clear
         
         push symbol 
         push rsi
         push 6
         call strcopy
+      
         
           
         jmp endsymbol
-
-        
-        
+   
         newSymbol:
         push rax
         inc r15
@@ -151,15 +148,13 @@ section .text
         
         push tempString
         push 0
-        push 10
+        push 20
         call clear
 
         
         numberToString r14d, tempString
         pop rax
         push rdi  
-
-    
 
     
         push qword [symbol]
@@ -172,7 +167,7 @@ section .text
         
         push symbol 
         push 0 
-        push 10
+        push 20
         call clear
         
         
@@ -184,17 +179,13 @@ section .text
         
         push tempString
         push 0
-        push 6
+        push 20
         call clear  
-        print symbol, 10
-        print newline, 1
-
-        
+        print symbol, 20
         
 
-
-        pop rdi
-        ret
+    pop rdi
+    ret
 
 
 

@@ -65,7 +65,7 @@ binarySearch:
             push rax
             mov edi, tempString                 ; clear up for next iteration
             mov al, 0
-            mov ecx, 6
+            mov ecx, 20
             repe stosb
             pop rax
 

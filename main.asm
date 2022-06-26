@@ -4,9 +4,9 @@
 
 
 section .bss 
-    line resb 10
+    line resb 20
     instructionT resb 1
-    symbol resb 10
+    symbol resb 20
 
     comp resb 6
     jump resb 6
@@ -26,8 +26,6 @@ L_INSTRUCTION equ 2
 
 section .data
     filename db "file.asm", 0
-    opfile db "opcode.txt", 0
-    reset times 10 db 0
     opcode db "0000000000000000"
     
     lastround db false
@@ -83,7 +81,7 @@ section .text
 
             push symbol 
             push 0
-            push 10
+            push 20
             call clear
 
             cmp byte [lastround], true
@@ -166,13 +164,13 @@ section .text
 
             push symbol                          ; clear symbol for next iteration
             push 0
-            push 10
+            push 20
             call clear
 
             iteration:   
                 
+                print newline, 1
                 
-
                 push opcode                      ; clear opcode for next iteration
                 push "0"
                 push 16
@@ -286,9 +284,9 @@ section .text
             
             push line    
             push 0                  
-            push 10
+            push 20
             call clear              ; clears the previous line
-            sub edi, 9              ; get back to starting index
+            sub edi, 19              ; get back to starting index
 
             whitespace:
             cmp byte [esi], 10
@@ -361,6 +359,7 @@ section .text
             mov al, [rbp + 16]          
             mov ecx, [rbp + 8]
             repe stosb
+      
             pop rax
             pop rcx
             pop rsi
