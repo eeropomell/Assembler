@@ -55,12 +55,12 @@ section .text
             mov ecx, 3
             repe stosb
             inc edi                     
-            call compOP             ; opcode for comp field
-            push op
+            call compOP                         ; opcode for comp field
+            push comp
             push 6
             call fill
             
-            cmp byte [dest], 0      ; destination field is optional
+            cmp byte [dest], 0                  ; destination field is optional
             jz nodest
             call destOP        
             push dest
@@ -69,27 +69,27 @@ section .text
             jmp jumpfield  
 
             nodest:
-            add edi, 3              ; fill adds 3 to edi so do it here if fill isnt called
+            add edi, 3                          ; fill adds 3 to edi so do it here if fill isnt called
 
             jumpfield:
-            cmp byte [jump], 0      ; jump field is optional
+            cmp byte [jump], 0                  ; jump field is optional
             jz cleanup
             
             call jumpOP            
-            push op
+            push jump
             push 3
             call fill
             
             cleanup:    
-            push comp           ; clears comp, dest and jump field
+            push comp                            ; clears comp, dest and jump field
             push 0
-            push 18             ; clear 18 bytes which is comp, dest and jump
+            push 18                              ; clear 18 bytes which is comp, dest and jump
             call clear
 
             jmp iteration
 
             a_instruction:
-            call getSymbol          ; for example @150 symbol = "150"
+            call getSymbol                       ; for example @150 symbol = "150"
 
             cmp byte [symbol], "0"
             jl handle 
@@ -105,7 +105,7 @@ section .text
             stringToNumber symbol
             call binaryString
 
-            push symbol             ; clear symbol for next iteration
+            push symbol                          ; clear symbol for next iteration
             push 0
             push 10
             call clear
@@ -114,12 +114,12 @@ section .text
                 
                 print newline, 1
 
-                push opcode             ; clear opcode for next iteration
+                push opcode                      ; clear opcode for next iteration
                 push "0"
                 push 16
                 call clear
 
-                cmp byte [lastround], true              ; true if end of file
+                cmp byte [lastround], true       ; true if end of file
                 jne main
                 
         theEnd:
@@ -129,7 +129,7 @@ section .text
         
 
 
-        binaryString:                   ; convert A instruction to binary version
+        binaryString:                               ; convert A instruction to binary version
             mov eax, edi
             mov ebx, 2
             mov ecx, 15

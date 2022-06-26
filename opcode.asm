@@ -1,72 +1,6 @@
 %include "proc.asm"
 
 section .data
-    null db "null", 0
-    M db "M", 0
-    D db "D", 0
-    DM db "DM", 0
-    A db "A", 0
-    AM DB "AM", 0
-    AD db "AD", 0
-    ADM db "ADM", 0
-    MD db "MD", 0
-
-    jJGT db "JGT", 0
-    jJGE db "JGE", 0
-    jJEQ db "JEQ", 0
-    jJLT db "JLT", 0
-    jJNE db "JNE", 0
-    jJLE db "JLE", 0
-    jJMP db "JMP", 0
-
-    zero db "0", 0
-    one db "1", 0
-    negone db "-1", 0
-    notD db "!D", 0
-    notA db "!A", 0
-    notM db "!M", 0
-    minusD db "-D", 0
-    minusA db "-A", 0
-    minusM db "-M", 0
-    dplus1 db "D+1", 0
-    aplus1 db "A+1", 0
-    mplus1 db "M+1", 0
-    dminus1 db "D-1", 0
-    aminus1 db "A-1", 0
-    mminus1 db "M-1", 0
-    dplusa db "D+A", 0
-    dplusm db "D+M", 0
-    dminusa db "D-A", 0
-    dminusm db "D-M", 0
-    aminusd db "A-D", 0
-    mminusd db "M-D", 0
-    danda db "D&A", 0
-    dandm db "D&M", 0
-    dora db "D|A", 0
-    dorm db "D|M", 0
-
-
-    
-    
-    
-
-        
-
-    
-
-    registers dd "R0", "R1", "R2"
-    dd "R3", "R4", "R5"
-    dd "R6", "R7", "R8" 
-    dd "R9", "R10", "R11"
-    dd "R12", "R13", "R14", "R15"
-    registersEnd db 0
-    
-    predefined dq "SCREEN", "KBD", "SP"
-    dq "LCL", "ARG", "THIS", "THAT"
-    predefinedEnd db 0
-
-    t_predefined dq "16384", "24576", "0"
-    dq "1", "2", "3", "4"
 
     predefinedTable:
         dq "ARG", "KBD", "LCL",
@@ -103,6 +37,12 @@ section .data
         dd "0", "1", "A", "A+1", "A-1", "A-D", "D", "D&A"
         dd "D&M", "D+1", "D+A", "D+M", "D-1", "D-A"
         dd "D-M", "D|A", "D|M", "M", "M+1", "M-1", "M-D", 0
+    compCodes:
+        dq "110001", "001101", "110001", "111010", "110011"
+        dq "001111", "110011", "101010", "111111", "110000"
+        dq "110111", "110010", "000111", "001100", "000000"
+        dq "000000", "011111", "000010", "000010", "001110", "010011"
+        dq "010011", "010101", "010101", "110000", "110111", "110010", "000111", 0
        
 section .bss 
     tempString resb 6
@@ -117,22 +57,25 @@ section .text
         push comp 
         push 27
         call binarySearch
+        xor eax, eax
+        
+        lea rsi, [compCodes + 8*ebx]
+        push comp 
+        push rsi 
+        push 6
+        call strcopy
         print space, 1
+        print comp, 6
+        
+
         mov ecx, 1
         xor eax, eax
-        cmp rbx, 23
-        cmovae eax, ecx
-        cmp rbx, 2
-        cmove eax, ecx
-        cmp rbx, 6
-        cmove eax, ecx
-        cmp rbx, 18
-        cmove eax, ecx
-        cmp rbx, 21
-        cmove eax, ecx
-        cmp rbx, 15
-        cmove eax, ecx
-        printNumber rax
+        call getAcode
+        
+
+        
+        
+
         
         ret
 
@@ -151,6 +94,7 @@ section .text
         push rsi
         push 3
         call strcopy
+        
         
         
         ret

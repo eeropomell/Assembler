@@ -71,3 +71,19 @@ binarySearch:
     pop rdi
 
     ret 32
+
+getAcode:
+    cmp rbx, 23
+    cmovae eax, ecx
+    cmp rbx, 2
+    cmove eax, ecx
+    cmp rbx, 6
+    cmove eax, ecx
+    cmp rbx, 18
+    cmove eax, ecx
+    cmp rbx, 21
+    cmove eax, ecx
+    cmp rbx, 15
+    cmove eax, ecx
+
+    ret
