@@ -13,6 +13,8 @@ binarySearch:
     push rdi
     push rcx
     push rsi
+    push r10 
+
     mov eax, 0                              ; index of first item
     mov edx, [rbp + 8]                      ; index of last item
 
@@ -75,17 +77,34 @@ binarySearch:
                                            
     found:
     
+    pop r10
     pop rsi
     pop rcx
     pop rdi
 
     ret 32
 
+addSymbol:
+    mov ecx, r15d                   ; amount of items to shift
+    sub ecx, eax
+
+    push qword [rsp + 8]
+    push rcx
+    push symbolCodes
+    call addItem 
+
+    push qword [rsp + 16]
+    push rcx
+    push symbolTable
+    call addItem
+
+    ret 16
 
 
 addItem:
     mov rbp, rsp
     push rax
+    push r10
     mov rbx, [rbp + 24]
     mov r10, 0
     mov rsi, [rbp + 8]
@@ -97,6 +116,7 @@ addItem:
         inc r10
         cmp r10, [rbp + 16]
         jng .loop
+    pop r10
     pop rax
     ret 24
 

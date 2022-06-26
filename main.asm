@@ -60,18 +60,32 @@ section .text
             xor eax, eax
             cmp byte [line + 1], "("
             jne .iteration
+
             call getSymbol
-            mov rax, [symbol]
-            inc r15
+
+            push 8
+            push symbolTable
+            push symbol
+            push r15
+            call binarySearch
+
             
-            mov qword [symbolTable + 8*r15], rax
-            mov edi, tempString + 1
-            numberToString r10d, edi
-            mov qword [symbolCodes + 8*r15], rax
+            numberToString r10d, tempString
             
 
-        
+            push qword [symbol]
+            push qword [edi]
+            call addSymbol
+            
+            
+
             .iteration:
+
+            push symbol 
+            push 0
+            push 10
+            call clear
+
             cmp byte [lastround], true
             jne .line
             
@@ -157,7 +171,7 @@ section .text
 
             iteration:   
                 
-                print newline, 1
+                
 
                 push opcode                      ; clear opcode for next iteration
                 push "0"

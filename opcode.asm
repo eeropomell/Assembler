@@ -116,57 +116,82 @@ section .text
 
     symbolOP:
         push rdi
+
         push 8
         push symbolTable
         push symbol
         push r15                            ; table length
         call binarySearch
+        
+
         cmp ebx, 69                         ; if symbol is not already in the table
         je newSymbol
            
         lea esi, [symbolCodes + 8*ebx]
-        push symbol
+
+        push symbol 
+        push 0
+        push 10
+        call clear
+        
+        push symbol 
         push rsi
-        push 8
+        push 6
         call strcopy
         
+          
         jmp endsymbol
+
+        
         
         newSymbol:
         push rax
         inc r15
-        mov edi, tempString + 1
-        numberToString r14d, edi
-        pop rax
-        push rdi
-
-        mov ecx, r15d
-        sub ecx, eax
+        xor rdi, rdi
         
-        push rdi
-        push rcx
-        push symbolCodes
-        call addItem
-        
-
-        push qword [symbol]
-        push rcx
-        push symbolTable
-        call addItem
-
-        pop rdi
-        mov rax, [rdi]
-        mov qword [symbol], rax
-        
-        inc r14
-
-        endsymbol:
         push tempString
         push 0
-        push 6
+        push 10
+        call clear
+
+        
+        numberToString r14d, tempString
+        pop rax
+        push rdi  
+
+    
+
+    
+        push qword [symbol]
+        push qword [rdi]
+        call addSymbol
+        
+
+        pop rdi                             ; r14 as string
+        mov rax, [rdi]
+        
+        push symbol 
+        push 0 
+        push 10
         call clear
         
         
+        mov qword [symbol], rax
+        inc r14
+        
+
+        endsymbol:
+        
+        push tempString
+        push 0
+        push 6
+        call clear  
+        print symbol, 10
+        print newline, 1
+
+        
+        
+
 
         pop rdi
         ret

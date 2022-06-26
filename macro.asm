@@ -26,20 +26,20 @@ section .data
 
 
 %macro numberToString 2
-    mov eax, %1
+    push rax
     mov edi, %2
-    %%loop:
-        mov bx, 10
-        cdq
-        div bx
-        add dl, 30h
-        mov [edi], dl
-        dec edi
-        cmp eax, 0
-        jnz %%loop
-        inc edi
-    
-
+    mov eax, %1
+    mov ecx, 1
+    mov bx, 10
+    .loop:
+    cdq
+    div bx
+    add dl, 30h
+    mov [edi + ecx], dl
+    dec ecx
+    cmp eax, 0
+    jnz .loop
+    pop rax
 %endmacro
 
 %macro strcmp 2
