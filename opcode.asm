@@ -133,23 +133,39 @@ section .text
         jmp endsymbol
         
         newSymbol:
+        push rax
         inc r15
         mov edi, tempString + 1
         numberToString r14d, edi
+        pop rax
+        push rdi
 
-        mov eax, [symbol]
-        mov qword [symbolTable + 8*r15], rax
-        mov rax, [rdi]
-        mov qword [symbolCodes + 8*r15], rax
-        mov [symbol], rax 
-        inc r14
+        mov ecx, r15d
+        sub ecx, eax
         
+        push rdi
+        push rcx
+        push symbolCodes
+        call addItem
+        
+
+        push qword [symbol]
+        push rcx
+        push symbolTable
+        call addItem
+
+        pop rdi
+        mov rax, [rdi]
+        mov qword [symbol], rax
+        
+        inc r14
 
         endsymbol:
         push tempString
         push 0
         push 6
         call clear
+        
         
 
         pop rdi

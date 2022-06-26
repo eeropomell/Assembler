@@ -28,6 +28,10 @@ binarySearch:
         imul ecx, ebx
         lea rsi, [edi + ecx]
         
+        
+        
+        
+        
         mov edi, tempString
         .move:
             movsb
@@ -40,6 +44,8 @@ binarySearch:
         jz found
         mov r9d, ebx
         dec r9d
+        cmp r9d, 0                  
+        jl notfound
         inc ebx
         
         mov ecx, -1
@@ -63,9 +69,12 @@ binarySearch:
 
             cmp rax, rdx
             jle getMid
-            mov ebx, 69
+        notfound:
+        mov edx, ebx
+        mov ebx, 69
                                            
     found:
+    
     pop rsi
     pop rcx
     pop rdi
@@ -73,6 +82,23 @@ binarySearch:
     ret 32
 
 
+
+addItem:
+    mov rbp, rsp
+    push rax
+    mov rbx, [rbp + 24]
+    mov r10, 0
+    mov rsi, [rbp + 8]
+    .loop:
+        mov rdi, [rsi + 8*rax]
+        mov [rsi + 8*rax], rbx
+        inc rax
+        mov rbx, rdi
+        inc r10
+        cmp r10, [rbp + 16]
+        jng .loop
+    pop rax
+    ret 24
 
 getAcode:
     mov ecx, 1

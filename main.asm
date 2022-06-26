@@ -45,9 +45,42 @@ section .text
         call initSymbolTable
 
         firstWave:
+            push qword [totalBytes]
+            push qword [bytenum]
+            push qword [fileptr]
+
+
+
+
+            mov r10, 0
+            .line:
+            inc r10
+
+            call getline
+            xor eax, eax
+            cmp byte [line + 1], "("
+            jne .iteration
+            call getSymbol
+            mov rax, [symbol]
+            inc r15
+            
+            mov qword [symbolTable + 8*r15], rax
+            mov edi, tempString + 1
+            numberToString r10d, edi
+            mov qword [symbolCodes + 8*r15], rax
             
 
+        
+            .iteration:
+            cmp byte [lastround], true
+            jne .line
+            
+            mov byte [lastround], false
+            pop qword [fileptr]
+            pop qword [bytenum]
+            pop qword [totalBytes]
 
+        
         main: 
             call getline
             
@@ -123,7 +156,7 @@ section .text
             call clear
 
             iteration:   
-                print opcode, 16
+                
                 print newline, 1
 
                 push opcode                      ; clear opcode for next iteration
