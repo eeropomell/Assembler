@@ -54,15 +54,15 @@ section .text
             mov al, "1"                         ; first three bytes are 111
             mov ecx, 3
             repe stosb
-            inc edi                      
-            call compop             ; opcode for comp field
+            inc edi                     
+            call compOP             ; opcode for comp field
             push op
             push 6
             call fill
             
             cmp byte [dest], 0      ; destination field is optional
             jz nodest
-            call destop         
+            call destOP        
             push dest
             push 3
             call fill   
@@ -75,7 +75,7 @@ section .text
             cmp byte [jump], 0      ; jump field is optional
             jz cleanup
             
-            call jumpProc            
+            call jumpOP            
             push op
             push 3
             call fill

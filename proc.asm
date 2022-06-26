@@ -28,12 +28,12 @@ binarySearch:
         imul ecx, ebx
         lea rsi, [edi + ecx]
         
-
         mov edi, tempString
         .move:
             movsb
             cmp byte [esi], 0
-            jnz .move
+            jnz .move   
+
         
         mov ecx, [rbp + 16]                 ; field to search (jump, comp, or dest)
         strcmp ecx, tempString
@@ -42,7 +42,6 @@ binarySearch:
         dec r9d
         inc ebx
         
-
         mov ecx, -1
         mov rdi, [rbp + 16] 
         mov rsi, tempString
@@ -61,49 +60,14 @@ binarySearch:
             mov ecx, 6
             repe stosb
             pop rax
-            
+
             cmp rax, rdx
-            jl getMid
-            mov eax, -1
-                
+            jle getMid
+            mov ebx, 69
+                                           
     found:
     pop rsi
     pop rcx
     pop rdi
 
-    ret 32
-
-strcmpArr:
-    mov ecx, 1
-    mov rsi, [rsp + 8]
-    mov rbx, [rsp + 16]
-    .intro:
-        mov rdi, tempString
-        .move:
-            movsb
-            cmp byte [esi], 0
-            jne .move
-        strcmp ebx, tempString
-        jz .match
-        push tempString
-        push 0
-        push 6
-        call clear
-        mov rax, [rsp + 8]
-        mov rdx, [rsp + 32]
-        imul rdx, rcx
-        lea rsi, [rax + rdx]
-        inc ecx
-        
-        cmp rsi, [rsp + 24]
-        jnge .intro
-        mov ecx, 11
-
-    .match:
-        push tempString
-        push 0
-        push 6
-        call clear
-    
-    
     ret 32

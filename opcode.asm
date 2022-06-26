@@ -97,16 +97,48 @@ section .data
     destCodes:
         db "100", "110", "111", "101"
         db "010", "011", "001", "011", 0
+    
+    compTable:
+        dd "!A", "!D", "!M", "-1", "-A", "-D", "-M"
+        dd "0", "1", "A", "A+1", "A-1", "A-D", "D", "D&A"
+        dd "D&M", "D+1", "D+A", "D+M", "D-1", "D-A"
+        dd "D-M", "D|A", "D|M", "M", "M+1", "M-1", "M-D", 0
        
-
 section .bss 
     tempString resb 6
 
 section .text
 
-    ; OPCODE FOR JUMP
-    jumpProc:
+
+    compOP:
+        print comp, 6
+        push 4
+        push compTable
+        push comp 
+        push 27
+        call binarySearch
+        print space, 1
+        mov ecx, 1
+        xor eax, eax
+        cmp rbx, 23
+        cmovae eax, ecx
+        cmp rbx, 2
+        cmove eax, ecx
+        cmp rbx, 6
+        cmove eax, ecx
+        cmp rbx, 18
+        cmove eax, ecx
+        cmp rbx, 21
+        cmove eax, ecx
+        cmp rbx, 15
+        cmove eax, ecx
+        printNumber rax
         
+        ret
+
+    ; OPCODE FOR JUMP
+    jumpOP:
+        printNumber 1
         push 4
         push jumpTable
         push jump 
@@ -124,7 +156,8 @@ section .text
         ret
 
      ; OPCODE FOR DESTINATION
-    destop:
+    destOP:
+
         push 4
         push destTable
         push dest 
@@ -137,6 +170,7 @@ section .text
         push 3
         call strcopy
         
+        
         push tempString
         push 0
         push 6
@@ -145,21 +179,20 @@ section .text
         ret
 
     handlePredefined:
-        print symbol, 6
         push 8
         push predefinedTable
         push symbol
         push 22
         call binarySearch
-        
-        
-        
+        cmp ebx, 69                         ; if symbol is not predefined
+        je variable
+           
         lea esi, [predefinedCodes + 8*ebx]
         push symbol
         push rsi
         push 8
         call strcopy
-        print symbol, 6
+        
         jmp endpredifined
         
         variable:
@@ -175,246 +208,6 @@ section .text
         ret
 
 
-    ; OPCODE FOR COMP
-    compop:
-        strcmp comp, zero
-        jnz .n1
-        mov rdx, "101010"
-        mov byte [opcode + 3], "0"
-        mov [op], rdx
-        jmp finishcomp
-        .n1:
-        strcmp comp, one
-        jnz .n2
-        mov rdx, "111111"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n2:
-        strcmp comp, negone
-        jnz .n3
-        mov rdx, "111010"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n3:
-        strcmp comp, D 
-        jnz .n4
-        mov rdx, "001100" 
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n4:
-        strcmp comp, A
-        jnz .n5
-        mov rdx, "110000"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n5:
-        strcmp comp, M
-        jnz .n6
-        mov rdx, "110000"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n6:
-        strcmp comp, notD
-        jnz .n7
-        mov rdx, "001101"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n7:
-        strcmp comp, notA
-        jnz .n8
-        mov rdx, "110001"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n8:
-        strcmp comp, notM
-        jnz .n9
-        mov rdx, "110001"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n9:
-        strcmp comp, minusD
-        jnz .n10
-        mov rdx, "001111"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n10:
-        strcmp comp, minusA
-        jnz .n11
-        mov rdx, "110011"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n11:
-        strcmp comp, minusM
-        jnz .n12
-        mov rdx, "110011"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n12:
-        strcmp comp, dplus1
-        jnz .n13
-        mov rdx, "011111"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n13:
-        strcmp comp, aplus1
-        jnz .n14
-        mov rdx, "110111"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n14:
-        strcmp comp, mplus1
-        jnz .n15
-        mov rdx, "110111"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n15:
-        strcmp comp, dminus1
-        jnz .n16  
-        mov rdx, "001110"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n16:
-        strcmp comp, aminus1
-        jnz .n17
-        mov rdx, "110010"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n17:
-        strcmp comp, mminus1
-        jnz .n18
-        mov rdx, "110010"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n18:
-        strcmp comp, dplusa
-        jnz .n19
-        mov rdx, "000010"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n19:
-        strcmp comp, dplusm
-        jnz .n20
-        mov rdx, "000010"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n20:
-        strcmp comp, dminusa
-        jnz .n21
-        mov rdx, "010011"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n21:
-        strcmp comp, dminusm
-        jnz .n22
-        mov rdx, "010011"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n22:
-        strcmp comp, aminusd
-        jnz .n23
-        mov rdx, "000111"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n23:
-        strcmp comp, mminusd
-        jnz .n24
-        mov rdx, "000111"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n24:
-        strcmp comp, danda
-        jnz .n25
-        mov rdx, "000000"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n25:
-        strcmp comp, dandm
-        jnz .n26
-        mov rdx, "000000"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
-        jmp finishcomp
-        .n26:
-        strcmp comp, dora
-        jnz .n27
-        mov rdx, "010101"
-        mov [op], rdx
-        mov byte [opcode + 3], "0"
-        jmp finishcomp
-        .n27:
-        strcmp comp, dorm
-        jnz finishcomp
-        mov rdx, "010101"
-        mov [op], rdx
-        mov byte [opcode + 3], "1"
 
-        finishcomp:
-        ret
-
-
-    ; OPCODE FOR JUMP FIELD
-    jumpop:
-        mov byte [jump + 3], 0
-
-        strcmp jump, jJGE
-        jnz .n1
-        mov dword [op], "011"
-        jmp endjump
-        .n1:
-        strcmp jump, null
-        jnz .n2
-        mov dword [op], "000"
-        jmp endjump
-        .n2:
-        strcmp jump, jJGT
-        jnz .n3
-        mov dword [op], "001"
-        jmp endjump
-        .n3:
-        strcmp jump, jJLT
-        jnz .n4
-        mov dword [op], "100"
-        jmp endjump
-        .n4:
-        strcmp jump, jJNE
-        jnz .n5
-        mov dword [op], "101"
-        jmp endjump
-        .n5:
-        strcmp jump, jJLE
-        jnz .n6
-        mov dword [op], "110"
-        jmp endjump
-        .n6:
-        strcmp jump, jJMP
-        jnz endjump
-        mov dword [op], "111"
-
-        endjump:
-       
-        ret
+   
 
