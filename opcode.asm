@@ -32,7 +32,7 @@ section .data
         dq "010011", "010101", "010101", "110000", "110111", "110010", "000111", 0
        
 section .bss 
-    tempString resb 20
+    tempString resb 10
 
 
 section .text
@@ -57,7 +57,7 @@ section .text
 
         push tempString
         push 0
-        push 20
+        push 10
         call clear
 
         pop rdi
@@ -83,7 +83,7 @@ section .text
         
         push tempString
         push 0
-        push 20
+        push 10
         call clear
 
         pop rdi
@@ -107,7 +107,7 @@ section .text
         
         push tempString
         push 0
-        push 20
+        push 10
         call clear
         pop rdi
         ret
@@ -115,12 +115,16 @@ section .text
     symbolOP:
         push rdi
 
+        lea edi, [symbolTable]
+        mov al, [symbolTable + 1]
+        ;printNumber rax
+
         push 8
         push symbolTable
         push symbol
         push r15                            ; table length
         call binarySearch
-        
+        ;printNumber rbx
 
         cmp ebx, 69                         ; if symbol is not already in the table
         je newSymbol
@@ -129,7 +133,7 @@ section .text
 
         push symbol 
         push 0
-        push 20
+        push 10
         call clear
         
         push symbol 
@@ -148,7 +152,7 @@ section .text
         
         push tempString
         push 0
-        push 20
+        push 10
         call clear
 
         
@@ -167,7 +171,7 @@ section .text
         
         push symbol 
         push 0 
-        push 20
+        push 10
         call clear
         
         
@@ -179,9 +183,9 @@ section .text
         
         push tempString
         push 0
-        push 20
+        push 10
         call clear  
-        print symbol, 20
+        
         
 
     pop rdi

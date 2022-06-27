@@ -6,18 +6,18 @@
 section .bss 
     line resb 20
     instructionT resb 1
-    symbol resb 20
+    symbol resb 10
 
     comp resb 6
     jump resb 6
     dest resb 6
 
+    symbolTable resb 1000
+    symbolCodes resb 1000
+
     fileptr resb 64
     totalBytes resb 4
     bytenum resb 4
-
-    symbolTable resb 1000
-    symbolCodes resb 1000
 
 A_INSTRUCTION equ 0
 C_INSTRUCTION equ 1
@@ -47,9 +47,6 @@ section .text
             push qword [bytenum]
             push qword [fileptr]
 
-
-
-
             mov r10, 0
             .line:
             inc r10
@@ -60,28 +57,19 @@ section .text
             jne .iteration
 
             call getSymbol
-
-            push 8
-            push symbolTable
-            push symbol
-            push r15
-            call binarySearch
-
             
-            numberToString r10d, tempString
             
+            mov byte [symbolTable + 1], "L"
 
-            push qword [symbol]
-            push qword [edi]
-            call addSymbol
-            
+            mov al, [symbolTable + 1]
+            ;printNumber rax
             
 
             .iteration:
 
             push symbol 
             push 0
-            push 20
+            push 10
             call clear
 
             cmp byte [lastround], true
@@ -92,7 +80,9 @@ section .text
             pop qword [bytenum]
             pop qword [totalBytes]
 
-        
+        mov al, [symbolTable + 1]
+        printNumber rax
+
         main: 
             call getline
             
@@ -164,7 +154,7 @@ section .text
 
             push symbol                          ; clear symbol for next iteration
             push 0
-            push 20
+            push 10
             call clear
 
             iteration:   
