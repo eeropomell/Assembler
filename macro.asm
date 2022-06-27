@@ -24,6 +24,18 @@ section .data
     newline db 10
     space db 32
 
+%macro strrank 1
+    mov ecx, -1
+    mov rdi, %1
+    mov rsi, tempString
+    %%compare:
+        inc ecx
+       
+        cmp r8b, [rsi + rcx]
+        je %%compare
+%endmacro
+    
+
 
 %macro numberToString 2
     push rax

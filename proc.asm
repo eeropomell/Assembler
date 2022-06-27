@@ -31,18 +31,16 @@ binarySearch:
         lea rsi, [edi + ecx]
         
         
+        
+        
         mov edi, tempString
         .move:
             movsb
             cmp byte [esi], 0
-            jnz .move 
+            jnz .move   
 
         
         mov ecx, [rbp + 16]                 ; field to search (jump, comp, or dest)
-        xor r10, r10
-        mov r10b, byte [symbolTable + 1]
-        
-        
         strcmp ecx, tempString
         jz found
         mov r9d, ebx

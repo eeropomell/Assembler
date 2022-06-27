@@ -115,16 +115,12 @@ section .text
     symbolOP:
         push rdi
 
-        lea edi, [symbolTable]
-        mov al, [symbolTable + 1]
-        ;printNumber rax
-
         push 8
         push symbolTable
         push symbol
         push r15                            ; table length
         call binarySearch
-        ;printNumber rbx
+        
 
         cmp ebx, 69                         ; if symbol is not already in the table
         je newSymbol
@@ -187,7 +183,6 @@ section .text
         call clear  
         
         
-
     pop rdi
     ret
 

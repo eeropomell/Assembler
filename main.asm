@@ -15,6 +15,7 @@ section .bss
     symbolTable resb 1000
     symbolCodes resb 1000
 
+
     fileptr resb 64
     totalBytes resb 4
     bytenum resb 4
@@ -58,12 +59,23 @@ section .text
 
             call getSymbol
             
-            
-            mov byte [symbolTable + 1], "L"
+            push 8
+            push symbolTable
+            push symbol
+            push r15
+            call binarySearch
 
-            mov al, [symbolTable + 1]
-            ;printNumber rax
+            push tempString
+            push 0
+            push 10
+            call clear
             
+            
+            numberToString r10d, tempString   
+            
+            push qword [symbol]
+            push qword [edi]
+            call addSymbol
 
             .iteration:
 
@@ -80,9 +92,7 @@ section .text
             pop qword [bytenum]
             pop qword [totalBytes]
 
-        mov al, [symbolTable + 1]
-        printNumber rax
-
+        
         main: 
             call getline
             
@@ -148,9 +158,10 @@ section .text
             donthandle:
             
             
-             
+            
             stringToNumber symbol
             call binaryString
+            
 
             push symbol                          ; clear symbol for next iteration
             push 0

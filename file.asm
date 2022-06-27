@@ -1,2 +1,5 @@
-@AAAA
 (AAAA)
+@AAAA
+(LOOP)
+@LOOP
+A=1
