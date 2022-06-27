@@ -35,8 +35,6 @@ section .data
         je %%compare
 %endmacro
     
-
-
 %macro numberToString 2
     push rax
     mov edi, %2

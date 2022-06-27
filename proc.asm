@@ -1,6 +1,5 @@
 section .text
 
-
 strcopy:
     mov edi, [rsp + 24]
     mov esi, [rsp + 16]
@@ -30,16 +29,12 @@ binarySearch:
         imul ecx, ebx
         lea rsi, [edi + ecx]
         
-        
-        
-        
         mov edi, tempString
         .move:
             movsb
             cmp byte [esi], 0
             jnz .move   
-
-        
+   
         mov ecx, [rbp + 16]                 ; field to search (jump, comp, or dest)
         strcmp ecx, tempString
         jz found
@@ -87,7 +82,6 @@ addSymbol:
     mov ecx, r15d                   ; amount of items to shift
     sub ecx, eax
     
-
     push qword [rsp + 8]
     push rcx
     push symbolCodes
@@ -99,7 +93,6 @@ addSymbol:
     call addItem
 
     ret 16
-
 
 addItem:
     mov rbp, rsp

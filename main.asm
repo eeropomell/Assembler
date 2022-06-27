@@ -34,7 +34,6 @@ section .data
 section .text
     global _start 
         
-
     _start:
         
         openfile filename
@@ -69,8 +68,7 @@ section .text
             push 0
             push 10
             call clear
-            
-            
+                    
             numberToString r10d, tempString   
             
             push qword [symbol]
@@ -91,8 +89,7 @@ section .text
             pop qword [fileptr]
             pop qword [bytenum]
             pop qword [totalBytes]
-
-        
+      
         main: 
             call getline
             
@@ -115,7 +112,6 @@ section .text
             push 6
             call fill
             
-
             cmp byte [dest], 0                  ; destination field is optional
             jz nodest
             call destOP        
@@ -156,13 +152,10 @@ section .text
             handle:
             call symbolOP
             donthandle:
-            
-            
-            
+             
             stringToNumber symbol
             call binaryString
             
-
             push symbol                          ; clear symbol for next iteration
             push 0
             push 10
@@ -181,7 +174,6 @@ section .text
                 jne main
                 
         theEnd:
-
         exit
 
         binaryString:                               ; convert A instruction to binary version
@@ -207,7 +199,6 @@ section .text
                 jmp .whitespace
             .out:
     
-
             mov eax, C_INSTRUCTION
             mov ebx, A_INSTRUCTION 
             mov ecx, L_INSTRUCTION
@@ -299,7 +290,6 @@ section .text
             inc byte [bytenum]
             jmp whitespace
 
-
             move:
                 inc byte [bytenum]
                 movsb 
@@ -349,9 +339,7 @@ section .text
             repe movsb 
             ret 16       
 
-
-        clear:
-            
+        clear:      
             mov rbp, rsp
             push rsi
             push rcx
@@ -368,7 +356,4 @@ section .text
 
 
 
-; nasm -gdwarf -f elf64 main.asm
-; ld -g -o main main.o -dynamic-linker /lib64/ld-linux-x86-64.so.2 -lc -m elf_x86_64
-; ld -m elf_x86_64 -g -o main main.o
-; top gun
+

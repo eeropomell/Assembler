@@ -1,8 +1,5 @@
 %include "proc.asm"
 
-
-
-
 section .data
 
     jumpTable:
@@ -37,7 +34,6 @@ section .bss
 
 section .text
 
-
     compOP:
         push rdi
         push 4
@@ -62,7 +58,6 @@ section .text
 
         pop rdi
         ret
-
         
     ; OPCODE FOR JUMP
     jumpOP:
@@ -73,8 +68,7 @@ section .text
         push jump 
         push 6                      ; last item index
         call binarySearch
-        
-        
+             
         lea esi, [jumpCodes + 3*ebx]
         push jump 
         push rsi
@@ -103,8 +97,7 @@ section .text
         push rsi
         push 3
         call strcopy
-        
-        
+               
         push tempString
         push 0
         push 10
@@ -121,7 +114,6 @@ section .text
         push r15                            ; table length
         call binarySearch
         
-
         cmp ebx, 69                         ; if symbol is not already in the table
         je newSymbol
            
@@ -136,9 +128,7 @@ section .text
         push rsi
         push 6
         call strcopy
-      
-        
-          
+             
         jmp endsymbol
    
         newSymbol:
@@ -150,18 +140,15 @@ section .text
         push 0
         push 10
         call clear
-
-        
+      
         numberToString r14d, tempString
         pop rax
         push rdi  
-
-    
+ 
         push qword [symbol]
         push qword [rdi]
         call addSymbol
         
-
         pop rdi                             ; r14 as string
         mov rax, [rdi]
         
@@ -169,19 +156,15 @@ section .text
         push 0 
         push 10
         call clear
-        
-        
+              
         mov qword [symbol], rax
         inc r14
-        
-
         endsymbol:
         
         push tempString
         push 0
         push 10
-        call clear  
-        
+        call clear        
         
     pop rdi
     ret
